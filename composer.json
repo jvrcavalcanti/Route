@@ -10,7 +10,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Accolon\\Route\\": "src"
+            "Accolon\\Route\\": "src",
+            "App\\": "app"
         }
     },
     "minimum-stability": "stable",

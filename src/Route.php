@@ -4,6 +4,7 @@ namespace Accolon\Route;
 
 use Accolon\Route\Response;
 use Accolon\Route\Request;
+use Exception;
 
 class Route
 {
@@ -14,6 +15,7 @@ class Route
         "path" => [],
         "delete" => []
     ];
+    private static $controller = "App\\Controller\\";
 
     public function get(string $url, $action)
     {
@@ -45,6 +47,16 @@ class Route
         return self::$routes;
     }
 
+    public function getController()
+    {
+        return self::$controller;
+    }
+
+    public function defineController($controllerPath)
+    {
+        self::$controller = $controllerPath;
+    }
+
     public static function getUrl(): string
     {
         $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -65,7 +77,29 @@ class Route
 
         if(is_callable($route)) {
             $return =  $route(new Request);
-            return (is_string($return)) ? $return : null;
+
+            if(!is_array($return) || !is_object($return)) {
+                return $return;
+            }
+            return "";
+        }
+
+        if(is_string($route)) {
+            $action = explode("@", $route);
+
+            $class = self::$controller . $action[0];
+
+            $controller = new $class;
+
+            $function = $action[1];
+
+            $return = $controller->$function(new Request);
+
+            if(!is_array($return) && !is_object($return)) {
+                return $return;
+            }
+            
+            return "";
         }
     }
 }
