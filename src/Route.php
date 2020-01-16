@@ -57,13 +57,15 @@ class Route
         $method = strtolower($_SERVER['REQUEST_METHOD']);
         
         if(!isset(self::$routes[$method][$url])) {
-            return Response::response()->text("Page not found", 404);
+            $response = new Response();
+            return $response->text("Page not found", 404);
         }
 
         $route = self::$routes[$method][$url];
 
         if(is_callable($route)) {
-            return $route(new Request);
+            $return =  $route(new Request);
+            return (is_string($return)) ? $return : null;
         }
     }
 }

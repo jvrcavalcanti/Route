@@ -27,7 +27,7 @@ class Response
         $this->typeContent = "application/json";
         $this->body = json_encode($body);
         $this->code = $code;
-        return $this->getBody();
+        return $this->header();
     }
 
     public function text(string $body, int $code = 200): string
@@ -35,18 +35,14 @@ class Response
         $this->typeContent = "text/plain";
         $this->body = $body;
         $this->code = $code;
-        return $this->getBody();
+        return $this->header();
     }
 
-    public function getBody(): string
+    private function header()
     {
         http_response_code($this->code);
         header("Content-Type: {$this->typeContent}; charset={$this->charset}");
         header("Status: {$this->status[$this->code]}"); 
         return $this->body;
-    }
-
-    public static function response(): Response {
-        return new self();
     }
 }
