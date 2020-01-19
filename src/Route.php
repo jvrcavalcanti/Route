@@ -32,7 +32,7 @@ class Route
         self::$routes["put"][$url] = $action;
     }
 
-    public function path(string $url, $action)
+    public function patch(string $url, $action)
     {
         self::$routes["path"][$url] = $action;
     }
