@@ -9,7 +9,7 @@ class Request
     public function __construct()
     {
         foreach($_REQUEST as $key => $value) {
-            $this->$key = $value;
+            $this->$key = htmlspecialchars($value, ENT_QUOTES, "UTF-8");
         }
 
         $this->body = json_decode(file_get_contents('php://input'));
