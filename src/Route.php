@@ -15,7 +15,7 @@ class Route
         "delete" => []
     ];
     private static $controller = "App\\Controller\\";
-    private static $middleware = "Accolon\\Route\\Middleware";
+    private static $middleware = "Accolon\\Route\\PatternMiddleware";
 
     public function get(string $url, $action)
     {
