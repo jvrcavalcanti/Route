@@ -90,13 +90,6 @@ class Route
 
         if(is_callable($route)) {
             $return =  $route(new Request, new Response) ?? "";
-
-            if(!is_array($return) || !is_object($return)) {
-                echo $return;
-                return;
-            }
-            echo "";
-            return;
         }
 
         if(is_string($route)) {
@@ -109,13 +102,10 @@ class Route
             $function = $action[1];
 
             $return = $controller->$function(new Request, new Response) ?? "";
+        }
 
-            if(!is_array($return) && !is_object($return)) {
-                echo $return;
-                return;
-            }
-            
-            echo "";
+        if(!is_array($return) || !is_object($return)) {
+            echo $return;
             return;
         }
     }
