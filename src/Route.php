@@ -4,7 +4,6 @@ namespace Accolon\Route;
 
 use Accolon\Route\Response;
 use Accolon\Route\Request;
-use Exception;
 
 class Route
 {
@@ -76,7 +75,7 @@ class Route
         $route = self::$routes[$method][$url];
 
         if(is_callable($route)) {
-            $return =  $route(new Request);
+            $return =  $route(new Request, new Response) ?? "";
 
             if(!is_array($return) || !is_object($return)) {
                 return $return;
@@ -93,7 +92,7 @@ class Route
 
             $function = $action[1];
 
-            $return = $controller->$function(new Request);
+            $return = $controller->$function(new Request, new Response) ?? "";
 
             if(!is_array($return) && !is_object($return)) {
                 return $return;

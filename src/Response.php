@@ -4,14 +4,15 @@ namespace Accolon\Route;
 
 class Response
 {
-    private $body;
-    private $code;
-    private $typeContent = "text/plain";
-    private $charset = "UTF-8";
+    private string $body;
+    private int $code;
+    private string $typeContent = "text/plain";
+    private string $charset = "UTF-8";
     private $status = [
         200 => "200 OK",
         201 => "201 Created",
         400 => "400 Bad Request",
+        401 => "401 Unauthorized",
         404 => "404 Not Found",
         500 => "500 Internal Server Error"
     ];
@@ -19,7 +20,6 @@ class Response
     public function __construct()
     {
         header_remove();
-        return $this;  
     }
 
     public function json($body, int $code = 200): string
@@ -33,6 +33,14 @@ class Response
     public function text(string $body, int $code = 200): string
     {
         $this->typeContent = "text/plain";
+        $this->body = $body;
+        $this->code = $code;
+        return $this->header();
+    }
+
+    public function html(string $body, int $code = 200): string
+    {
+        $this->typeContent = "text/html";
         $this->body = $body;
         $this->code = $code;
         return $this->header();
