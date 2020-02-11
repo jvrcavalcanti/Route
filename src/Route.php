@@ -11,35 +11,40 @@ class Route
         "get" => [],
         "post" => [],
         "put" => [],
-        "path" => [],
+        "patch" => [],
         "delete" => []
     ];
     private static $controller = "App\\Controller\\";
-    private static $middleware = "Accolon\\Route\\PatternMiddleware";
+    private static $middleware = [];
 
-    public function get(string $url, $action)
+    public function get(string $url, $action, $middleware = null)
     {
-        self::$routes["get"][$url] = $action;
+        self::addRoute("get", $url, $action, $middleware);
     }
     
-    public function post(string $url, $action)
+    public function post(string $url, $action, $middleware = null)
     {
-        self::$routes["post"][$url] = $action;
+        self::addRoute("post", $url, $action, $middleware);
     }
 
-    public function put(string $url, $action)
+    public function put(string $url, $action, $middleware = null)
     {
-        self::$routes["put"][$url] = $action;
+        self::addRoute("put", $url, $action, $middleware);
     }
 
-    public function patch(string $url, $action)
+    public function patch(string $url, $action, $middleware = null)
     {
-        self::$routes["path"][$url] = $action;
+        self::addRoute("patch", $url, $action, $middleware);
     }
 
-    public function delete(string $url, $action)
+    public function delete(string $url, $action, $middleware = null)
     {
-        self::$routes["delete"][$url] = $action;
+        self::addRoute("delete", $url, $action, $middleware);
+    }
+
+    public static function addRoute(string $method, string $url, $action, $middleware)
+    {
+        self::$routes[$method][$url] = $action;
     }
 
     public function getRoutes(): array
@@ -63,9 +68,9 @@ class Route
         return isset($_GET['path']) ? $_GET['path'] : $uri;
     }
 
-    public static function addMiddleware($namespace): void
+    public static function addMiddleware($middlewares): void
     {
-        self::$middleware = $namespace;
+        self::$middleware[] = $middlewares;
     }
 
     public static function dispath(): void
@@ -75,15 +80,13 @@ class Route
         $response = new Response();
         
         if(!isset(self::$routes[$method][$url])) {
-            echo $response->text("Page not found", 404);
-            return;
+            die($response->text("Page not found", 404));
         }
 
-        $middleware = new self::$middleware;
-
-        if(!$middleware->validate(new Request, new Response)) {
-            echo $response->text("Access Invalid", 401);
-            return;
+        foreach(self::$middleware as $middle) {
+            if(!$middle->validate(new Request, new Response)) {
+                die($response->text("Access Invalid", 401));
+            }
         }
 
         $route = self::$routes[$method][$url];
