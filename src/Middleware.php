@@ -4,5 +4,5 @@ namespace Accolon\Route;
 
 interface Middleware
 {
-    public function validate(Request $request, Response $response): bool;
+    public function handle(Request $request, Response $response): bool;
 }

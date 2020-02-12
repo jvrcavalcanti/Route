@@ -12,7 +12,9 @@ class Request
             $this->$key = htmlspecialchars($value, ENT_QUOTES, "UTF-8");
         }
 
-        $this->body = json_decode(file_get_contents('php://input'));
+        foreach (json_decode(file_get_contents('php://input')) ?? [] as $key => $value) {
+            $this->$key = $value;
+        }
     }
 
     public function get($param)

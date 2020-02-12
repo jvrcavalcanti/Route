@@ -7,15 +7,10 @@ use Accolon\Route\Request;
 
 class Route
 {
-    private static $routes = [
-        "get" => [],
-        "post" => [],
-        "put" => [],
-        "patch" => [],
-        "delete" => []
-    ];
+    private static $routes = [];
     private static $controller = "App\\Controller\\";
     private static $middleware = [];
+    private static $middlewareRoutes = [];
 
     public function get(string $url, $action, $middleware = null)
     {
@@ -44,7 +39,19 @@ class Route
 
     public static function addRoute(string $method, string $url, $action, $middleware)
     {
+        if (!isset(self::$routes[$method])) {
+            self::$routes = [];
+        }
+
         self::$routes[$method][$url] = $action;
+        
+        if(!isset(self::$middlewareRoutes[$url])) {
+            self::$middlewareRoutes[$url] = [];
+        }
+
+        if($middleware) {
+            self::$middlewareRoutes[$url][] = new $middleware;
+        }
     }
 
     public function getRoutes(): array
@@ -59,18 +66,18 @@ class Route
 
     public function defineController($controllerPath)
     {
-        self::$controller = $controllerPath;
+        self::$controller = $controllerPath . "\\";
     }
 
     public static function getUrl(): string
     {
         $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-        return isset($_GET['path']) ? $_GET['path'] : $uri;
+        return $_GET['path'] ?? $uri;
     }
 
     public static function addMiddleware($middlewares): void
     {
-        self::$middleware[] = $middlewares;
+        self::$middleware[] = new $middlewares;
     }
 
     public static function dispath(): void
@@ -84,7 +91,13 @@ class Route
         }
 
         foreach(self::$middleware as $middle) {
-            if(!$middle->validate(new Request, new Response)) {
+            if(!$middle->handle(new Request, new Response)) {
+                die($response->text("Access Invalid", 401));
+            }
+        }
+
+        foreach (self::$middlewareRoutes[$url] as $middle) {
+            if(!$middle->handle(new Request, new Response)) {
                 die($response->text("Access Invalid", 401));
             }
         }
