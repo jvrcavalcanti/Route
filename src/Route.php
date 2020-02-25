@@ -4,13 +4,11 @@ namespace Accolon\Route;
 
 use Accolon\Route\Response;
 use Accolon\Route\Request;
+use Accolon\Route\TraitRoute;
 
 class Route
 {
-    private static $routes = [];
-    private static $controller = "App\\Controller\\";
-    private static $middleware = [];
-    private static $middlewareRoutes = [];
+    use TraitRoute;
 
     public function get(string $url, $action, $middleware = null)
     {
@@ -37,47 +35,10 @@ class Route
         self::addRoute("delete", $url, $action, $middleware);
     }
 
-    public static function addRoute(string $method, string $url, $action, $middleware)
-    {
-        if (!isset(self::$routes[$method])) {
-            self::$routes = [];
-        }
-
-        self::$routes[$method][$url] = $action;
-        
-        if(!isset(self::$middlewareRoutes[$url])) {
-            self::$middlewareRoutes[$url] = [];
-        }
-
-        if($middleware) {
-            self::$middlewareRoutes[$url][] = new $middleware;
-        }
-    }
-
-    public function getRoutes(): array
-    {
-        return self::$routes;
-    }
-
-    public function getController()
-    {
-        return self::$controller;
-    }
-
-    public function defineController($controllerPath)
-    {
-        self::$controller = $controllerPath . "\\";
-    }
-
     public static function getUrl(): string
     {
         $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         return $_GET['path'] ?? $uri;
-    }
-
-    public static function addMiddleware($middlewares): void
-    {
-        self::$middleware[] = new $middlewares;
     }
 
     public static function dispath(): void
@@ -105,7 +66,7 @@ class Route
         $route = self::$routes[$method][$url];
 
         if(is_callable($route)) {
-            $return =  $route(new Request, new Response) ?? "";
+            $body =  $route(new Request, new Response) ?? "";
         }
 
         if(is_string($route)) {
@@ -117,12 +78,11 @@ class Route
 
             $function = $action[1];
 
-            $return = $controller->$function(new Request, new Response) ?? "";
+            $body = $controller->$function(new Request, new Response) ?? "";
         }
 
-        if(!is_array($return) || !is_object($return)) {
-            echo $return;
-            return;
+        if(!is_array($body) || !is_object($body)) {
+            die($body);
         }
     }
 }
