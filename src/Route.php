@@ -41,10 +41,15 @@ class Route
         return $_GET['path'] ?? $uri;
     }
 
+    public static function getMethod(): string
+    {
+        return mb_strtolower($_SERVER['REQUEST_METHOD']);
+    }
+
     public static function dispath(): void
     {
         $url = self::getUrl();
-        $method = strtolower($_SERVER['REQUEST_METHOD']);
+        $method = self::getMethod();
         $response = new Response();
         
         if(!isset(self::$routes[$method][$url])) {

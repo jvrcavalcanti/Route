@@ -12,10 +12,6 @@ trait TraitRoute
     
     public static function addRoute(string $method, string $url, $action, $middleware)
     {
-        if (!isset(self::$routes[$method])) {
-            self::$routes = [];
-        }
-
         self::$routes[$method][$url] = $action;
         
         if(!isset(self::$middlewareRoutes[$url])) {
