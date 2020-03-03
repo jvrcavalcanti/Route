@@ -75,7 +75,7 @@ class Route
         }
 
         if(is_string($route)) {
-            $action = explode("@", $route);
+            $action = explode(".", $route);
 
             $class = self::$controller . $action[0];
 
