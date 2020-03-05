@@ -4,8 +4,6 @@ namespace Accolon\Route;
 
 class Request
 {
-    private $body;
-
     public function __construct()
     {
         foreach($_REQUEST as $key => $value) {
@@ -31,6 +29,6 @@ class Request
 
     public function getBody()
     {
-        return $this->body;
+        return json_decode(file_get_contents('php://input')) ?? [];
     }
 }
