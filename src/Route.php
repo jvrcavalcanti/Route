@@ -4,14 +4,15 @@ namespace Accolon\Route;
 
 use Accolon\Route\Response;
 use Accolon\Route\Request;
+use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Routes;
 
 class Route
 {
     use Routes;
+    use Methods;
 
     private static $controller = "App\\Controller\\";
-    private static $data;
 
     public function getController()
     {
@@ -21,31 +22,6 @@ class Route
     public function defineController($controllerPath)
     {
         self::$controller = $controllerPath . "\\";
-    }
-
-    public function get(string $url, $action, $middleware = null)
-    {
-        self::addRoute("get", $url, $action, $middleware);
-    }
-    
-    public function post(string $url, $action, $middleware = null)
-    {
-        self::addRoute("post", $url, $action, $middleware);
-    }
-
-    public function put(string $url, $action, $middleware = null)
-    {
-        self::addRoute("put", $url, $action, $middleware);
-    }
-
-    public function patch(string $url, $action, $middleware = null)
-    {
-        self::addRoute("patch", $url, $action, $middleware);
-    }
-
-    public function delete(string $url, $action, $middleware = null)
-    {
-        self::addRoute("delete", $url, $action, $middleware);
     }
 
     public static function getUrl(): string
