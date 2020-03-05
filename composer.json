@@ -2,6 +2,12 @@
     "name": "accolon/route",
     "description": "Library routes php",
     "license": "MIT",
+    "config": {
+        "process-timeout": 0
+    },
+    "scripts": {
+        "serve": "php -S localhost:8000 -t test"
+    },
     "authors": [
         {
             "name": "Joao Victor Rocha Cavalcanti",
@@ -10,8 +16,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Accolon\\Route\\": "src",
-            "App\\": "app"
+            "Accolon\\Route\\": "src"
         }
     },
     "minimum-stability": "dev",

@@ -4,11 +4,24 @@ namespace Accolon\Route;
 
 use Accolon\Route\Response;
 use Accolon\Route\Request;
-use Accolon\Route\TraitRoute;
+use Accolon\Route\Traits\Routes;
 
 class Route
 {
-    use TraitRoute;
+    use Routes;
+
+    private static $controller = "App\\Controller\\";
+    private static $data;
+
+    public function getController()
+    {
+        return self::$controller;
+    }
+
+    public function defineController($controllerPath)
+    {
+        self::$controller = $controllerPath . "\\";
+    }
 
     public function get(string $url, $action, $middleware = null)
     {
@@ -71,7 +84,7 @@ class Route
         $route = self::$routes[$method][$url];
 
         if(is_callable($route)) {
-            $body =  $route(new Request, new Response) ?? "";
+            $body = $route(new Request, new Response) ?? "";
         }
 
         if(is_string($route)) {

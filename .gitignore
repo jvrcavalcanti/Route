@@ -2,3 +2,4 @@ vendor
 test
 helper.php
 app
+composer.lock

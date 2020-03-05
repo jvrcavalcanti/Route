@@ -1,15 +1,18 @@
 <?php
 
-namespace Accolon\Route;
+namespace Accolon\Route\Traits;
 
-trait TraitRoute
-{
+trait Routes
+{   
     private static $routes = [];
-    private static $controller = "App\\Controller\\";
     private static $middleware = [];
     private static $middlewareRoutes = [];
-    private static $data;
-    
+
+    public static function addMiddleware($middlewares): void
+    {
+        self::$middleware[] = new $middlewares;
+    }
+
     public static function addRoute(string $method, string $url, $action, $middleware)
     {
         self::$routes[$method][$url] = $action;
@@ -26,20 +29,5 @@ trait TraitRoute
     public function getRoutes(): array
     {
         return self::$routes;
-    }
-
-    public function getController()
-    {
-        return self::$controller;
-    }
-
-    public function defineController($controllerPath)
-    {
-        self::$controller = $controllerPath . "\\";
-    }
-
-    public static function addMiddleware($middlewares): void
-    {
-        self::$middleware[] = new $middlewares;
     }
 }
