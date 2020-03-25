@@ -6,26 +6,26 @@ trait Methods
 {
     public function get(string $url, $action, $middleware = null)
     {
-        self::addRoute("get", $url, $action, $middleware);
+        $this->addRoute("get", $url, $action, $middleware);
     }
     
     public function post(string $url, $action, $middleware = null)
     {
-        self::addRoute("post", $url, $action, $middleware);
+        $this->addRoute("post", $url, $action, $middleware);
     }
 
     public function put(string $url, $action, $middleware = null)
     {
-        self::addRoute("put", $url, $action, $middleware);
+        $this->addRoute("put", $url, $action, $middleware);
     }
 
     public function patch(string $url, $action, $middleware = null)
     {
-        self::addRoute("patch", $url, $action, $middleware);
+        $this->addRoute("patch", $url, $action, $middleware);
     }
 
     public function delete(string $url, $action, $middleware = null)
     {
-        self::addRoute("delete", $url, $action, $middleware);
+        $this->addRoute("delete", $url, $action, $middleware);
     }
 }

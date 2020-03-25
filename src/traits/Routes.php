@@ -4,30 +4,30 @@ namespace Accolon\Route\Traits;
 
 trait Routes
 {   
-    private static $routes = [];
-    private static $middleware = [];
-    private static $middlewareRoutes = [];
+    private $routes = [];
+    private $middleware = [];
+    private $middlewareRoutes = [];
 
-    public static function addMiddleware($middlewares): void
+    public function addMiddleware($middlewares): void
     {
-        self::$middleware[] = new $middlewares;
+        $this->middleware[] = new $middlewares;
     }
 
-    public static function addRoute(string $method, string $url, $action, $middleware)
+    public function addRoute(string $method, string $url, $action, $middleware)
     {
-        self::$routes[$method][$url] = $action;
+        $this->routes[$method][$url] = $action;
         
-        if(!isset(self::$middlewareRoutes[$url])) {
-            self::$middlewareRoutes[$url] = [];
+        if(!isset($this->middlewareRoutes[$url])) {
+            $this->middlewareRoutes[$url] = [];
         }
 
         if($middleware) {
-            self::$middlewareRoutes[$url][] = new $middleware;
+            $this->middlewareRoutes[$url][] = new $middleware;
         }
     }
 
     public function getRoutes(): array
     {
-        return self::$routes;
+        return $this->routes;
     }
 }
