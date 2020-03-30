@@ -70,7 +70,7 @@ class Route
 
             $function = $action[1];
 
-            $next = $controller->$function;
+            $next = Closure::fromCallable([$controller, $function]);
         }
 
         foreach($this->globalMiddlewares ?? [] as $middleware) {
