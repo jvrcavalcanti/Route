@@ -5,14 +5,21 @@ namespace Accolon\Route;
 use Accolon\Route\Response;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
+use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\Routes;
+use Closure;
 
 class Route
 {
-    use Routes;
-    use Methods;
+    use Routes, Methods, Middlewares;
 
-    private $controller = "App\\Controller\\";
+    private string $controller = "App\\Controller\\";
+    private Closure $fallback;
+
+    public function __construct()
+    {
+        $this->fallback = fn($response) => $response->text("Not found", 404);
+    }
 
     public function getController()
     {
@@ -35,35 +42,26 @@ class Route
         return mb_strtolower($_SERVER['REQUEST_METHOD']);
     }
 
-    public function dispath(): void
+    public function dispatch(): void
     {
         $url = $this->getUrl();
         $method = $this->getMethod();
-        $response = new Response();
+
+        $request = new Request;
+        $response = new Response;
         
-        if(!isset($this->routes[$method][$url])) {
-            die($response->text("Page not found", 404));
-        }
-
-        foreach($this->middleware as $middle) {
-            if(!$middle->handle(new Request, new Response)) {
-                die($response->text("Access Invalid", 401));
-            }
-        }
-
-        foreach ($this->middlewareRoutes[$url] as $middle) {
-            if(!$middle->handle(new Request, new Response)) {
-                die($response->text("Access Invalid", 401));
-            }
+        if (!isset($this->routes[$method][$url])) {
+            $fallback = $this->fallback;
+            die($fallback($response));
         }
 
         $route = $this->routes[$method][$url];
 
-        if(is_callable($route)) {
-            $body = $route(new Request, new Response) ?? "";
+        if (is_callable($route)) {
+            $next = $route;
         }
 
-        if(is_string($route)) {
+        if (is_string($route)) {
             $action = explode(".", $route);
 
             $class = $this->controller . $action[0];
@@ -72,11 +70,22 @@ class Route
 
             $function = $action[1];
 
-            $body = $controller->$function(new Request, new Response) ?? "";
+            $next = $controller->$function;
         }
 
-        if(!is_array($body) || !is_object($body)) {
-            die($body);
+        foreach($this->globalMiddlewares ?? [] as $middleware) {
+            $middleware = new $middleware;
+            $result = $middleware->handle($request, $response);
+            $request = $result[0];
+            $response = $result[1];
         }
+
+        $middleware = $this->middlewares[$method][$url] ?? null;
+        
+        if($middleware) {
+            die((string) $middleware->handle($request, $response, $next));
+        }
+
+        die((string) $next($request, $response));
     }
 }

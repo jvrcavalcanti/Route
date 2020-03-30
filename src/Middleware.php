@@ -2,7 +2,11 @@
 
 namespace Accolon\Route;
 
-interface Middleware
+use Closure;
+use Accolon\Route\Request;
+use Accolon\Route\Response;
+
+abstract class Middleware
 {
-    public function handle(Request $request, Response $response): bool;
+    abstract public function handle(Request $request, Response $response, Closure $next): ?string;
 }

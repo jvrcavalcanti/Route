@@ -2,6 +2,8 @@
 
 namespace Accolon\Route\Traits;
 
+use Closure;
+
 trait Methods
 {
     public function get(string $url, $action, $middleware = null)
@@ -27,5 +29,10 @@ trait Methods
     public function delete(string $url, $action, $middleware = null)
     {
         $this->addRoute("delete", $url, $action, $middleware);
+    }
+
+    public function fallback(Closure $foo)
+    {
+        $this->fallback = $foo;
     }
 }
