@@ -4,31 +4,47 @@ namespace Accolon\Route;
 
 class Request
 {
+    private array $data = [];
+    private array $cookie = [];
+    private array $files = [];
+
     public function __construct()
     {
         foreach($_REQUEST as $key => $value) {
-            $this->$key = htmlentities($value);
+            $this->data[$key] = htmlentities($value);
         }
 
-        foreach (json_decode(file_get_contents('php://input')) ?? [] as $key => $value) {
-            $this->$key = htmlentities($value);
+        foreach (json_decode($this->getBody()) as $key => $value) {
+            $this->data[$key] = htmlentities($value);
         }
+
+        $this->cookie = $_COOKIE;
+        $this->files = $_FILES;
     }
 
-    public function get($param)
+    public function get(string $param)
     {
-        return $this->$param ?? null;
+        return $this->data[$param] ?? null;
     }
 
-    public function set($param, $value)
+    public function getFile(string $name)
     {
-        if (isset($this->$param)) {
-            $this->$param = $value;
-        }
+        return $this->files[$name] ?? null;
+    }
+
+    public function method(): string
+    {
+        return $_SERVER['REQUEST_METHOD'];
+    }
+
+    public function getCookie(string $name): ?string
+    {
+        $this->cookie = $_COOKIE;
+        return unserialize(base64_decode($this->cookie[$name])) ?? null;
     }
 
     public function getBody()
     {
-        return json_decode(file_get_contents('php://input')) ?? [];
+        return file_get_contents('php://input') ?? [];
     }
 }
