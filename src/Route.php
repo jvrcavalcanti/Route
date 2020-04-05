@@ -34,6 +34,8 @@ class Route
     public function getUrl(): string
     {
         $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+        $uri = explode("/public", $uri)[1];
+        $uri = $uri == "" ? "/" : $uri;
         return $_GET['path'] ?? $uri;
     }
 
