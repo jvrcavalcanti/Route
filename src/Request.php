@@ -14,8 +14,12 @@ class Request
             $this->data[$key] = htmlentities($value);
         }
 
-        foreach (json_decode($this->getBody()) as $key => $value) {
-            $this->data[$key] = htmlentities($value);
+        $body = json_decode($this->getBody());
+
+        if(is_array($body) || is_object($body)) {
+            foreach (json_decode($this->getBody()) as $key => $value) {
+                $this->data[$key] = htmlentities($value);
+            }
         }
 
         $this->cookie = $_COOKIE;
