@@ -7,6 +7,7 @@ class Request
     private array $data = [];
     private array $cookie = [];
     private array $files = [];
+    private array $headers = [];
 
     public function __construct()
     {
@@ -24,11 +25,17 @@ class Request
 
         $this->cookie = $_COOKIE;
         $this->files = $_FILES;
+        $this->headers = $_SERVER;
     }
 
     public function get(string $param)
     {
         return $this->data[$param] ?? null;
+    }
+
+    public function getHeader(string $name)
+    {
+        return $_SERVER[$name];
     }
 
     public function getFile(string $name)

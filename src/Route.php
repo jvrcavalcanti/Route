@@ -35,7 +35,7 @@ class Route
     {
         $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
         if(strpos($uri, "/public") !== false) {
-            $uri = explode("/public", $uri)[1];
+            $uri = explode("/public", $uri)[1]; 
         }
         $uri = $uri == "" ? "/" : $uri;
         return $_GET['path'] ?? $uri;
