@@ -7,7 +7,6 @@ use Accolon\Route\Response;
 
 trait Middlewares
 {
-    private array $middlewares;
     private array $globalMiddlewares;
 
     public function middlewares(array $middlewares): void

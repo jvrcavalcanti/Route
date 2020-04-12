@@ -10,7 +10,6 @@ class Response
     private int $code;
     private string $typeContent = "text/plain";
     private string $charset = "UTF-8";
-    private array $cookie = [];
     private $status = [
         200 => "200 OK",
         201 => "201 Created",

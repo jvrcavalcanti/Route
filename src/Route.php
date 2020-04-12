@@ -21,6 +21,11 @@ class Route
         $this->fallback = fn($response) => $response->text("Not found", 404);
     }
 
+    public function redirect(string $url)
+    {
+        header("Location: {$url}");
+    }
+
     public function getController()
     {
         return $this->controller;
@@ -53,20 +58,46 @@ class Route
 
         $request = new Request;
         $response = new Response;
-        
-        if (!isset($this->routes[$method][$url])) {
+
+        $route = null;
+
+        foreach($this->routes[$method] as $routeMethod) {
+            $patternUri = $routeMethod["url"];
+
+            if($url === "/") {
+                break;
+            }
+
+            if(preg_match_all($patternUri, $url, $keys, PREG_SET_ORDER)) {
+                unset($keys[0][0]);
+                $keys = $keys[0];
+
+                $cont = 0;
+                foreach($keys as $key) {
+                    $_REQUEST[$routeMethod["keys"][$cont]] = $key;
+                    $cont ++;
+                }
+
+                $route = $routeMethod;
+                break;
+            }
+        }
+
+        if ($url === "/") {
+            $route = $this->routes[$method]["/"];
+        }
+
+        if (!$route) {
             $fallback = $this->fallback;
             die($fallback($response));
         }
 
-        $route = $this->routes[$method][$url];
-
-        if (is_callable($route)) {
-            $next = $route;
+        if (is_callable($route["action"])) {
+            $next = $route["action"];
         }
 
-        if (is_string($route)) {
-            $action = explode(".", $route);
+        if (is_string($route["action"])) {
+            $action = explode(".", $route["action"]);
 
             $class = $this->controller . $action[0];
 
@@ -84,12 +115,14 @@ class Route
             $response = $result[1];
         }
 
-        $middleware = $this->middlewares[$method][$url] ?? null;
+        $middleware = $route["middleware"];
         
         if($middleware) {
-            die((string) $middleware->handle($request, $response, $next));
+            echo $middleware->handle($request, $response, $next);
+            exit;
         }
 
-        die((string) $next($request, $response));
+        echo ($next)($request, $response);
+        exit;
     }
 }

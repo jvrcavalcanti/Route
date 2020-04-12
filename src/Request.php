@@ -30,7 +30,12 @@ class Request
 
     public function get(string $param)
     {
-        return $this->data[$param] ?? null;
+        return $this->data[$param] ?? ($_REQUEST[$param] ?? null);
+    }
+
+    public function redirect(string $url)
+    {
+        header("Location: {$url}");
     }
 
     public function getHeader(string $name)
