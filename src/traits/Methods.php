@@ -31,6 +31,11 @@ trait Methods
         $this->addRoute("delete", $url, $action, $middleware);
     }
 
+    public function options(string $url, $action, $middleware = null)
+    {
+        $this->addRoute("options", $url, $action, $middleware);
+    }
+
     public function fallback(Closure $foo)
     {
         $this->fallback = $foo;

@@ -51,6 +51,19 @@ class Route
         return mb_strtolower($_SERVER['REQUEST_METHOD']);
     }
 
+    public function cors(string $origin = "*",array $methods = ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"])
+    {
+        $action = function(Request $req, Response $res) use ($methods, $origin) {
+            $res->setHeader("Access-Control-Allow-Origin", "{$origin}");
+            $res->setHeader("Access-Control-Allow-Methods", implode(",", $methods));
+            $res->setHeader("Access-Control-Allow-Headers", "Content-Type");
+            $res->setHeader("Status", 200);
+        };
+
+        $this->options("/", $action);
+        $this->options(".*", $action);
+    }
+
     public function dispatch(): void
     {
         $url = $this->getUrl();

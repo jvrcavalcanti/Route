@@ -5,3 +5,4 @@ app
 composer.lock
 controllers
 middlewares
+!src/middlewares

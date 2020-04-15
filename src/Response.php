@@ -2,8 +2,6 @@
 
 namespace Accolon\Route;
 
-use SimpleXMLElement;
-
 class Response
 {
     private string $body;

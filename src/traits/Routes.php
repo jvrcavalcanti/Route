@@ -2,6 +2,9 @@
 
 namespace Accolon\Route\Traits;
 
+use Accolon\Route\Response;
+use Accolon\Route\Request;
+
 trait Routes
 {
     private array $routes;
@@ -28,10 +31,10 @@ trait Routes
         }
 
         $url = preg_replace('~{([^}]*)}~', "([^/]+)", $url);
-        $url = str_replace("/", "\/", $url);
+        $newUrl = str_replace("/", "\/", $url);
 
-        $this->routes[$method][$url] = [
-            "url" => "/" . $url . "$/",
+        $this->routes[$method][$newUrl] = [
+            "url" => "/" . $newUrl . "$/",
             "method" => $method,
             "action" => $action,
             "middleware" => $middleware ? new $middleware : null,
