@@ -38,6 +38,11 @@ class Request
         header("Location: {$url}");
     }
 
+    public function getContentType(): string
+    {
+        return explode(',', $this->headers['HTTP_ACCEPT'])[0];
+    }
+
     public function getHeader(string $name)
     {
         return $_SERVER[$name];
@@ -48,7 +53,7 @@ class Request
         return $this->files[$name] ?? null;
     }
 
-    public function method(): string
+    public function getMethod(): string
     {
         return $_SERVER['REQUEST_METHOD'];
     }
