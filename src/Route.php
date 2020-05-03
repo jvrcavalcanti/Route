@@ -56,7 +56,7 @@ class Route
         $action = function(Request $req, Response $res) use ($methods, $origin) {
             $res->setHeader("Access-Control-Allow-Origin", "{$origin}");
             $res->setHeader("Access-Control-Allow-Methods", implode(",", $methods));
-            $res->setHeader("Access-Control-Allow-Headers", "Content-Type");
+            $res->setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
             $res->setHeader("Status", 200);
         };
 

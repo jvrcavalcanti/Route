@@ -28,9 +28,23 @@ class Request
         $this->headers = $_SERVER;
     }
 
-    public function get(string $param)
+    public function get(string $param): ?string
     {
         return $this->data[$param] ?? ($_REQUEST[$param] ?? null);
+    }
+
+    public function only(array $keys): array
+    {
+        return array_filter($this->data, function($key) use ($keys) {
+            if (in_array($key, $keys)) {
+                return $this->data[$key];
+            }
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    public function all(): array
+    {
+        return $this->data;
     }
 
     public function redirect(string $url)
@@ -41,6 +55,11 @@ class Request
     public function getContentType(): string
     {
         return explode(',', $this->headers['HTTP_ACCEPT'])[0];
+    }
+
+    public function getAuthorization(): ?string
+    {
+        return $_SERVER["HTTP_AUTHORIZATION"] ?? null;
     }
 
     public function getHeader(string $name)
