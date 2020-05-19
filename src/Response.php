@@ -41,27 +41,33 @@ class Response
         return $result;
     }
 
-    public function json($body, int $code = 200): string
+    public function status(int $code = 200): Response
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    public function json($body, int $code = 0): string
     {
         $this->typeContent = "application/json";
         $this->body = json_encode($body);
-        $this->code = $code;
+        $this->code = $code == 0 ? $this->code : $code;
         return $this->header();
     }
 
-    public function text(string $body, int $code = 200): string
+    public function text(string $body, int $code = 0): string
     {
         $this->typeContent = "text/plain";
         $this->body = $body;
-        $this->code = $code;
+        $this->code = $code == 0 ? $this->code : $code;
         return $this->header();
     }
 
-    public function html(string $body, int $code = 200): string
+    public function html(string $body, int $code = 0): string
     {
         $this->typeContent = "text/html";
         $this->body = $body;
-        $this->code = $code;
+        $this->code = $code == 0 ? $this->code : $code;
         return $this->header();
     }
 
@@ -69,7 +75,7 @@ class Response
     {
         http_response_code($this->code);
         header("Content-Type: {$this->typeContent}; charset={$this->charset}");
-        header("Status: {$this->status[$this->code]}"); 
+        header("Status: " . $this->status[$this->code]); 
         return $this->body;
     }
 
