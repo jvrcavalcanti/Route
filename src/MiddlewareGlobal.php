@@ -2,7 +2,7 @@
 
 namespace Accolon\Route;
 
-abstract class MiddlewareGlobal
+interface MiddlewareGlobal
 {
-    abstract public function handle(Request $request, Response $response): array;
+    public function handle(Request $request, Response $response): array;
 }

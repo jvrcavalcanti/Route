@@ -4,8 +4,12 @@ namespace Accolon\Route;
 
 class Response
 {
+    const TEXT = "text/plain";
+    const HTML = "text/html";
+    const JSON = "application/json";
+
     private string $body;
-    private int $code;
+    private int $code = 200;
     private string $typeContent = "text/plain";
     private string $charset = "UTF-8";
     private $status = [
@@ -41,6 +45,12 @@ class Response
         return $result;
     }
 
+    public function setTypeContent(string $type): Response
+    {
+        $this->typeContent = $type;
+        return $this;
+    }
+
     public function status(int $code = 200): Response
     {
         $this->code = $code;
@@ -49,26 +59,34 @@ class Response
 
     public function json($body, int $code = 0): string
     {
-        $this->typeContent = "application/json";
-        $this->body = json_encode($body);
-        $this->code = $code == 0 ? $this->code : $code;
-        return $this->header();
+        return $this->setTypeContent(Response::JSON)->send($body, $code);
     }
 
     public function text(string $body, int $code = 0): string
     {
-        $this->typeContent = "text/plain";
-        $this->body = $body;
-        $this->code = $code == 0 ? $this->code : $code;
-        return $this->header();
+        return $this->setTypeContent(Response::TEXT)->send($body, $code);
     }
 
     public function html(string $body, int $code = 0): string
     {
-        $this->typeContent = "text/html";
-        $this->body = $body;
-        $this->code = $code == 0 ? $this->code : $code;
-        return $this->header();
+        return $this->setTypeContent(Response::HTML)->send($body, $code);
+    }
+
+    public function send($body, int $code = 0): string
+    {
+        switch($this->typeContent) {
+            case Response::JSON:
+                $this->body = json_encode($body);
+                break;
+            case Response::HTML:
+                $this->body = $body;
+                break;
+            case Response::TEXT:
+                $this->body = $body;
+                break;
+        }
+
+        return $this->status($code == 0 ? $this->code : $code)->header();
     }
 
     private function header()

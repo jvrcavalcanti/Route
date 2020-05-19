@@ -1,11 +1,19 @@
 <?php
 
-use Accolon\Route\Middleware;
+namespace Accolon\Route\Middlewares;
 
-class JsonResponse extends Middleware
+use Accolon\Route\MiddlewareGlobal;
+use Accolon\Route\Response;
+
+class JsonResponse implements MiddlewareGlobal
 {
-    public function handle(\Accolon\Route\Request $request, \Accolon\Route\Response $response, \Closure $next): ?string
+    public function handle(\Accolon\Route\Request $request, \Accolon\Route\Response $response): array
     {
-        return json_encode($next($request, $response));
+        $response->setTypeContent(Response::JSON);
+
+        return [
+            $request,
+            $response
+        ];
     }
 }

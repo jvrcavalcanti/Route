@@ -122,8 +122,8 @@ class Route
         }
 
         foreach($this->globalMiddlewares ?? [] as $middleware) {
-            $middleware = new $middleware;
-            $result = $middleware->handle($request, $response);
+            $middle = new $middleware;
+            $result = $middle->handle($request, $response);
             $request = $result[0];
             $response = $result[1];
         }
