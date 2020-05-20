@@ -7,7 +7,7 @@ abstract class AbstractController
     public function validate(Request $request, array $keys): bool
     {
         foreach($keys as $key) {
-            if (!in_array($key, $request->all())) {
+            if (!array_key_exists($key, $request->only($keys))) {
                 return false;
             }
         }
