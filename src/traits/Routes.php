@@ -2,23 +2,22 @@
 
 namespace Accolon\Route\Traits;
 
-use Accolon\Route\Response;
-use Accolon\Route\Request;
+use Accolon\Route\Route;
 
 trait Routes
 {
     private array $routes;
 
-    public function addRoute(string $method, string $url, $action, $middleware): void
+    public function addRoute(string $method, string $url, $action, $middleware): Route
     {
         if ($url === "/") {
-            $this->routes[$method][$url] = [
-                "url" => "/^\/$/",
-                "method" => $method,
-                "action" => $action,
-                "middleware" => $middleware ? new $middleware : null
-            ];
-            return;
+            $this->routes[$method][$url] = Route::create(
+                $method,
+                "/^\/$/",
+                $action,
+                $middleware ? new $middleware : null
+            );
+            return $this->routes[$method][$url];
         }
 
         preg_match_all("~\{\s* ([a-zA-Z_][a-zA-Z0-9_-]*) \}~x", $url, $keys, PREG_SET_ORDER);
@@ -33,13 +32,15 @@ trait Routes
         $url = preg_replace('~{([^}]*)}~', "([^/]+)", $url);
         $newUrl = str_replace("/", "\/", $url);
 
-        $this->routes[$method][$newUrl] = [
-            "url" => "/" . $newUrl . "$/",
-            "method" => $method,
-            "action" => $action,
-            "middleware" => $middleware ? new $middleware : null,
-            "keys" => $newKeys
-        ];
+        $this->routes[$method][$url] = Route::create(
+            $method,
+            "/" . $newUrl . "$/",
+            $action,
+            $middleware ? new $middleware : null,
+            $newKeys
+        );
+
+        return $this->routes[$method][$url];
     }
 
     public function getRoutes(): array
