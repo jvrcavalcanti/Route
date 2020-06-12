@@ -26,7 +26,7 @@ class Route
         if (is_string($action)) {
             $string = explode(".", $action);
 
-            $class = $this->controller . $string[0];
+            $class = \Accolon\Route\Router::getControllersPath() . $this->controller . $string[0];
 
             $controller = new $class;
 
@@ -36,7 +36,7 @@ class Route
         }
     }
 
-    public static function create(string $method, string $uri, Closure $action, ?Middleware $middleware = null, array $keys = [])
+    public static function create(string $method, string $uri, $action, ?Middleware $middleware = null, array $keys = [])
     {
         return new Route($method, $uri, $action, $middleware, $keys);
     }

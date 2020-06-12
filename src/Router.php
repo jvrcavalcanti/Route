@@ -13,7 +13,7 @@ class Router
 {
     use Routes, Methods, Middlewares;
 
-    private string $controller = "App\\Controller\\";
+    private static string $controllerPath = "App\\Controller\\";
     private Closure $fallback;
 
     public function __construct()
@@ -26,14 +26,14 @@ class Router
         header("Location: {$url}");
     }
 
-    public function getController()
+    public static function setControllersPath(string $path)
     {
-        return $this->controller;
+        self::$controllerPath = $path;
     }
 
-    public function defineController($controllerPath)
+    public static function getControllersPath()
     {
-        $this->controller = $controllerPath . "\\";
+        return self::$controllerPath;
     }
 
     public function getUrl(): string
@@ -73,6 +73,11 @@ class Router
         $response = new Response;
 
         $route = null;
+
+        if (!isset($this->routes[$method])) {
+            $fallback = $this->fallback;
+            die($fallback($response));
+        }
 
         foreach($this->routes[$method] as $routeMethod) {
             $patternUri = $routeMethod->getUri();
