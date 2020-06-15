@@ -1,7 +1,10 @@
 <?php
 
-namespace Accolon\Route;
+namespace Accolon\Route\Routing;
 
+use Accolon\Route\Middlewares\Middleware;
+use Accolon\Route\Request;
+use Accolon\Route\Response;
 use Closure;
 
 class Route
@@ -26,7 +29,7 @@ class Route
         if (is_string($action)) {
             $string = explode(".", $action);
 
-            $class = \Accolon\Route\Router::getControllersPath() . $this->controller . $string[0];
+            $class = \Accolon\Route\Router::getControllersPath() . $string[0];
 
             $controller = new $class;
 
@@ -36,7 +39,13 @@ class Route
         }
     }
 
-    public static function create(string $method, string $uri, $action, ?Middleware $middleware = null, array $keys = [])
+    public static function create(
+        string $method,
+        string $uri,
+        $action,
+        ?Middleware $middleware = null,
+        array $keys = []
+    )
     {
         return new Route($method, $uri, $action, $middleware, $keys);
     }
@@ -64,6 +73,12 @@ class Route
     public function getMiddleware()
     {
         return $this->middleware;
+    }
+
+    public function middleware($middleware): Route
+    {
+        $this->middleware = is_string($middleware) ? new $middleware : $middleware;
+        return $this;
     }
 
     public function run(Request $request, Response $response)

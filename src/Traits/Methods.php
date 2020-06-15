@@ -2,7 +2,7 @@
 
 namespace Accolon\Route\Traits;
 
-use Accolon\Route\Route;
+use Accolon\Route\Routing\Route;
 use Closure;
 
 trait Methods

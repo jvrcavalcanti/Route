@@ -9,9 +9,9 @@ class Request
     private array $files = [];
     private array $headers = [];
 
-    public function __construct()
+    public function __construct($requests = [])
     {
-        foreach($_REQUEST as $key => $value) {
+        foreach($requests as $key => $value) {
             $this->data[$key] = htmlentities($value);
         }
 
@@ -31,6 +31,11 @@ class Request
     public function get(string $param): ?string
     {
         return $this->data[$param] ?? ($_REQUEST[$param] ?? null);
+    }
+
+    public function has(string $param)
+    {
+        return isset($this->data[$param]);
     }
 
     public function only(array $keys): array

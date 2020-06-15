@@ -69,7 +69,6 @@ class Router
         $url = $this->getUrl();
         $method = $this->getMethod();
 
-        $request = new Request;
         $response = new Response;
 
         $route = null;
@@ -113,6 +112,8 @@ class Router
         }
 
         /** @var \Accolon\Route\Route $route */
+        
+        $request = new Request($_REQUEST);
 
         foreach($this->globalMiddlewares ?? [] as $middleware) {
             $middle = new $middleware;
@@ -121,7 +122,9 @@ class Router
             $response = $result[1];
         }
 
-        echo $route->run($request, $response);
-        exit;
+        $body = $route->run($request, $response);
+        if (!is_array($body) && !is_object($body)) {
+            echo $body;
+        }
     }
 }
