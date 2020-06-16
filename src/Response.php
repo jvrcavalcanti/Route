@@ -86,7 +86,7 @@ class Response
                 break;
         }
 
-        return $this->status($code == 0 ? $this->code : $code)->header();
+        return $this->status($code == 0 ? $this->code : $code);
     }
 
     private function header()
@@ -105,5 +105,16 @@ class Response
     public function addHeader(string $name, string $value)
     {
         header("{$name}: {$value}", false);
+    }
+
+    public function __toString()
+    {
+        $body = $this->header();
+
+        if (is_array($body)) {
+            return "";
+        }
+
+        return $body;
     }
 }

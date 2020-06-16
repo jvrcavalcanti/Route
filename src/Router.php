@@ -122,9 +122,6 @@ class Router
             $response = $result[1];
         }
 
-        $body = $route->run($request, $response);
-        if (!is_array($body) && !is_object($body)) {
-            echo $body;
-        }
+        echo $route->run($request, $response);
     }
 }

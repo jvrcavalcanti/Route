@@ -2,7 +2,7 @@
 
 namespace Accolon\Route\Middlewares;
 
-use Accolon\Route\MiddlewareGlobal;
+use Accolon\Route\Middlewares\MiddlewareGlobal;
 
 class Cors implements MiddlewareGlobal
 {

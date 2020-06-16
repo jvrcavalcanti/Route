@@ -2,7 +2,7 @@
 
 namespace Accolon\Route\Middlewares;
 
-use Accolon\Route\MiddlewareGlobal;
+use Accolon\Route\Middlewares\MiddlewareGlobal;
 use Accolon\Route\Response;
 
 class JsonResponse implements MiddlewareGlobal
