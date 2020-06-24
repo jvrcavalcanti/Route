@@ -2,17 +2,14 @@
 
 namespace Accolon\Route\Middlewares;
 
-use Accolon\Route\Middlewares\MiddlewareGlobal;
+use Accolon\Route\Middleware;
 
-class Cors implements MiddlewareGlobal
+class Cors implements Middleware
 {
-    public function handle(\Accolon\Route\Request $request, \Accolon\Route\Response $response): array
+    public function handle(\Accolon\Route\Request $request, \Accolon\Route\Response $response, $next)
     {
         $response->setHeader("Access-Control-Allow-Origin", "*");
 
-        return [
-            $request,
-            $response
-        ];
+        return $next($request, $response);
     }
 }

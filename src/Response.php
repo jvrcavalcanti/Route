@@ -8,7 +8,7 @@ class Response
     const HTML = "text/html";
     const JSON = "application/json";
 
-    private string $body;
+    private $body;
     private int $code = 200;
     private string $typeContent = "text/plain";
     private string $charset = "UTF-8";
@@ -57,22 +57,22 @@ class Response
         return $this;
     }
 
-    public function json($body, int $code = 0): string
+    public function json($body, int $code = 0)
     {
         return $this->setTypeContent(Response::JSON)->send($body, $code);
     }
 
-    public function text(string $body, int $code = 0): string
+    public function text(string $body, int $code = 0)
     {
         return $this->setTypeContent(Response::TEXT)->send($body, $code);
     }
 
-    public function html(string $body, int $code = 0): string
+    public function html(string $body, int $code = 0)
     {
         return $this->setTypeContent(Response::HTML)->send($body, $code);
     }
 
-    public function send($body, int $code = 0): string
+    public function send($body, int $code = 0)
     {
         switch($this->typeContent) {
             case Response::JSON:
@@ -107,11 +107,11 @@ class Response
         header("{$name}: {$value}", false);
     }
 
-    public function __toString()
+    public function run()
     {
         $body = $this->header();
 
-        if (is_array($body)) {
+        if (is_array($body) || is_null($body)) {
             return "";
         }
 

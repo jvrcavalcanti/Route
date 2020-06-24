@@ -15,10 +15,14 @@ class Router
 
     private static string $controllerPath = "App\\Controller\\";
     private Closure $fallback;
+    private Request $request;
+    private Response $response;
 
     public function __construct()
     {
         $this->fallback = fn($response) => $response->text("Not found", 404);
+        $this->request = new Request();
+        $this->response = new Response();
     }
 
     public function redirect(string $url)
@@ -64,18 +68,18 @@ class Router
         $this->options(".*", $action);
     }
 
-    public function dispatch(): void
+    public function run()
     {
         $url = $this->getUrl();
         $method = $this->getMethod();
 
-        $response = new Response;
+        $response = $this->response;
 
         $route = null;
 
         if (!isset($this->routes[$method])) {
             $fallback = $this->fallback;
-            die($fallback($response));
+            return $fallback($response);
         }
 
         foreach($this->routes[$method] as $routeMethod) {
@@ -108,20 +112,27 @@ class Router
 
         if (!$route) {
             $fallback = $this->fallback;
-            die($fallback($response));
+            return $fallback($response);
         }
 
         /** @var \Accolon\Route\Route $route */
-        
-        $request = new Request($_REQUEST);
 
-        foreach($this->globalMiddlewares ?? [] as $middleware) {
-            $middle = new $middleware;
-            $result = $middle->handle($request, $response);
-            $request = $result[0];
-            $response = $result[1];
+        $this->request = new Request($_REQUEST);
+        $this->response = $response;
+
+        return $route->run($this->request, $this->response);
+    }
+
+    public function __invoke(Request $request, Response $response)
+    {
+        return $this->run();
+    }
+
+    public function dispatch()
+    {
+        $response = $this->runMiddlewares($this->request, $this->response);
+        if ($response instanceof Response === true) {
+            echo $response->run();
         }
-
-        echo $route->run($request, $response);
     }
 }
