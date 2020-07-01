@@ -15,6 +15,18 @@ trait Middlewares
     /** @var SplStack $stack */
     private $stack;
 
+    private array $middlewares = [];
+
+    public function registerMiddlewares(array $middlewares)
+    {
+        $this->middlewares = $middlewares;
+    }
+
+    public function getMiddleware(string $name)
+    {
+        return isset($this->middlewares[$name]) ? new $this->middlewares[$name] : null;
+    }
+
     public function useArray(array $middlewares): Router
     {
         foreach($middlewares as $middleware) {

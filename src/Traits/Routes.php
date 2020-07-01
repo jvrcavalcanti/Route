@@ -12,6 +12,7 @@ trait Routes
     {
         if ($url === "/") {
             $this->routes[$method][$url] = Route::create(
+                $this,
                 $method,
                 "/^\/$/",
                 $action,
@@ -33,6 +34,7 @@ trait Routes
         $newUrl = str_replace("/", "\/", $url);
 
         $this->routes[$method][$url] = Route::create(
+            $this,
             $method,
             "/" . $newUrl . "$/",
             $action,

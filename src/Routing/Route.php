@@ -2,9 +2,10 @@
 
 namespace Accolon\Route\Routing;
 
-use Accolon\Route\Middlewares\Middleware;
+use Accolon\Route\Middleware;
 use Accolon\Route\Request;
 use Accolon\Route\Response;
+use Accolon\Route\Router;
 use Closure;
 
 class Route
@@ -15,8 +16,12 @@ class Route
     private ?Middleware $middleware;
     private array $keys = [];
 
-    public function __construct(string $method, string $uri, $action, ?Middleware $middleware, array $keys)
+    private Router $router;
+
+    public function __construct(Router $router, string $method, string $uri, $action, ?Middleware $middleware, array $keys)
     {
+        $this->router = $router;
+
         $this->method = $method;
         $this->uri = $uri;
         $this->middleware = $middleware;
@@ -40,6 +45,7 @@ class Route
     }
 
     public static function create(
+        Router $router,
         string $method,
         string $uri,
         $action,
@@ -47,7 +53,7 @@ class Route
         array $keys = []
     )
     {
-        return new Route($method, $uri, $action, $middleware, $keys);
+        return new Route($router, $method, $uri, $action, $middleware, $keys);
     }
 
     public function getUri()
@@ -77,7 +83,7 @@ class Route
 
     public function middleware($middleware): Route
     {
-        $this->middleware = is_string($middleware) ? new $middleware : $middleware;
+        $this->middleware = is_string($middleware) ? $this->router->getMiddleware($middleware) : $middleware;
         return $this;
     }
 
