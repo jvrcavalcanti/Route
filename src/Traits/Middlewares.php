@@ -29,7 +29,7 @@ trait Middlewares
 
     public function useArray(array $middlewares): Router
     {
-        foreach($middlewares as $middleware) {
+        foreach ($middlewares as $middleware) {
             if ($middleware instanceof Middleware) {
                 $this->use(Closure::fromCallable([$middleware, "handle"]));
             }
@@ -41,12 +41,20 @@ trait Middlewares
         return $this;
     }
 
-    public function use(Closure $middleware): Router
+    public function use($middleware): Router
     {
         $this->startMiddlewareStack();
         $next = $this->stack->top();
 
-        $this->stack[] = function(Request $request, Response $response) use ($middleware, $next) {
+        if (is_string($middleware)) {
+            $middleware = new $middleware;
+        }
+
+        if ($middleware instanceof Middleware) {
+            $middleware = Closure::fromCallable([$middleware, 'handle']);
+        }
+
+        $this->stack[] = function (Request $request, Response $response) use ($middleware, $next) {
             $result = $middleware($request, $response, $next);
             if ($result instanceof Response === false) {
                 throw new UnexpectedValueException(

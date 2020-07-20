@@ -74,7 +74,7 @@ class Response
 
     public function send($body, int $code = 0)
     {
-        switch($this->typeContent) {
+        switch ($this->typeContent) {
             case Response::JSON:
                 $this->body = json_encode($body);
                 break;

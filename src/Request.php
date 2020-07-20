@@ -11,13 +11,13 @@ class Request
 
     public function __construct($requests = [])
     {
-        foreach($requests as $key => $value) {
+        foreach ($requests as $key => $value) {
             $this->data[$key] = htmlentities($value);
         }
 
         $body = json_decode($this->getBody());
 
-        if(is_array($body) || is_object($body)) {
+        if (is_array($body) || is_object($body)) {
             foreach (json_decode($this->getBody()) as $key => $value) {
                 $this->data[$key] = htmlentities($value);
             }
@@ -40,7 +40,7 @@ class Request
 
     public function only(array $keys): array
     {
-        return array_filter($this->data, function($key) use ($keys) {
+        return array_filter($this->data, function ($key) use ($keys) {
             if (in_array($key, $keys)) {
                 return $this->data[$key];
             }
@@ -77,9 +77,14 @@ class Request
         return $this->files[$name] ?? null;
     }
 
-    public function getMethod(): string
+    public function method(): string
     {
         return $_SERVER['REQUEST_METHOD'];
+    }
+
+    public function isMethod(string $method): bool
+    {
+        return $method === $this->method();
     }
 
     public function getCookie(string $name): ?string

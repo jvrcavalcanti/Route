@@ -43,7 +43,7 @@ class Router
     public function getUrl(): string
     {
         $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));
-        if(strpos($uri, "/public") !== false) {
+        if (strpos($uri, "/public") !== false) {
             $uri = explode("/public", $uri)[1]; 
         }
         $uri = $uri == "" ? "/" : $uri;
@@ -55,13 +55,17 @@ class Router
         return mb_strtolower($_SERVER['REQUEST_METHOD']);
     }
 
-    public function cors(string $origin = "*",array $methods = ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"])
+    public function cors(string $origin = "*", array $methods = ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"])
     {
-        $action = function(Request $req, Response $res) use ($methods, $origin) {
+        $this->use(function (Request $req, Response $res, $next) use ($methods, $origin) {
             $res->setHeader("Access-Control-Allow-Origin", "{$origin}");
             $res->setHeader("Access-Control-Allow-Methods", implode(",", $methods));
-            $res->setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-            $res->setHeader("Status", 200);
+            $res->setHeader("Access-Control-Allow-Headers", 'Content-Type, Accept, Authorization, X-Requested-With, Application');
+            return $next($req, $res);
+        });
+
+        $action = function ($req, $res) {
+            return $res->status(200);
         };
 
         $this->options("/", $action);
@@ -82,21 +86,21 @@ class Router
             return $fallback($response);
         }
 
-        foreach($this->routes[$method] as $routeMethod) {
+        foreach ($this->routes[$method] as $routeMethod) {
             $patternUri = $routeMethod->getUri();
 
             /** @var \Accolon\Route\Route $routeMethod */
 
-            if($url === "/") {
+            if ($url === "/") {
                 break;
             }
 
-            if(preg_match_all($patternUri, $url, $keys, PREG_SET_ORDER)) {
+            if (preg_match_all($patternUri, $url, $keys, PREG_SET_ORDER)) {
                 unset($keys[0][0]);
                 $keys = $keys[0];
 
                 $cont = 0;
-                foreach($keys as $key) {
+                foreach ($keys as $key) {
                     $_REQUEST[$routeMethod->getKey($cont)] = $key;
                     $cont ++;
                 }

@@ -25,7 +25,7 @@ trait Routes
 
         $newKeys = [];
 
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             unset($key[0]);
             $newKeys[] = $key[1];
         }
