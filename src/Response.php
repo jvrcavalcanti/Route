@@ -38,7 +38,7 @@ class Response
             $options["path"] ?? "/"
         );
 
-        if($result) {
+        if ($result) {
             $this->cookie = $_COOKIE;
         }
 
@@ -57,22 +57,22 @@ class Response
         return $this;
     }
 
-    public function json($body, int $code = 0)
+    public function json($body, int $code = 0, array $headers = [])
     {
-        return $this->setTypeContent(Response::JSON)->send($body, $code);
+        return $this->setTypeContent(Response::JSON)->send($body, $code, $headers);
     }
 
-    public function text(string $body, int $code = 0)
+    public function text(string $body, int $code = 0, array $headers = [])
     {
-        return $this->setTypeContent(Response::TEXT)->send($body, $code);
+        return $this->setTypeContent(Response::TEXT)->send($body, $code, $headers);
     }
 
-    public function html(string $body, int $code = 0)
+    public function html(string $body, int $code = 0, array $headers = [])
     {
-        return $this->setTypeContent(Response::HTML)->send($body, $code);
+        return $this->setTypeContent(Response::HTML)->send($body, $code, $headers);
     }
 
-    public function send($body, int $code = 0)
+    public function send($body, int $code = 0, array $headers = [])
     {
         switch ($this->typeContent) {
             case Response::JSON:
@@ -86,6 +86,8 @@ class Response
                 break;
         }
 
+        $this->setHeaders($headers);
+
         return $this->status($code == 0 ? $this->code : $code);
     }
 
@@ -93,13 +95,20 @@ class Response
     {
         http_response_code($this->code);
         header("Content-Type: {$this->typeContent}; charset={$this->charset}");
-        header("Status: " . $this->status[$this->code]); 
+        header("Status: " . $this->status[$this->code]);
         return $this->body;
     }
 
     public function setHeader(string $name, string $value)
     {
         header("{$name}: {$value}", true);
+    }
+
+    public function setHeaders(array $headers)
+    {
+        foreach ($headers as $name => $value) {
+            $this->setHeader($name, $value);
+        }
     }
 
     public function addHeader(string $name, string $value)
