@@ -95,7 +95,6 @@ class Response
     {
         http_response_code($this->code);
         header("Content-Type: {$this->typeContent}; charset={$this->charset}");
-        header("Status: " . $this->status[$this->code]);
         return $this->body;
     }
 

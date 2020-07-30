@@ -36,7 +36,7 @@ class Route
 
             $class = \Accolon\Route\Router::getControllersPath() . $string[0];
 
-            $controller = new $class;
+            $controller = $router->make($class);
 
             $function = $string[1];
 
@@ -51,8 +51,7 @@ class Route
         $action,
         ?Middleware $middleware = null,
         array $keys = []
-    )
-    {
+    ) {
         return new Route($router, $method, $uri, $action, $middleware, $keys);
     }
 

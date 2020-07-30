@@ -8,8 +8,9 @@ use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\Routes;
 use Closure;
+use Accolon\Route\Container;
 
-class Router
+class Router extends Container
 {
     use Routes, Methods, Middlewares;
 
