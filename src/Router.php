@@ -45,7 +45,7 @@ class Router extends Container
     {
         $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));
         if (strpos($uri, "/public") !== false) {
-            $uri = explode("/public", $uri)[1]; 
+            $uri = explode("/public", $uri)[1];
         }
         $uri = $uri == "" ? "/" : $uri;
         return $uri;
@@ -53,7 +53,7 @@ class Router extends Container
 
     public function getMethod(): string
     {
-        return mb_strtolower($_SERVER['REQUEST_METHOD']);
+        return strtolower($_SERVER['REQUEST_METHOD']);
     }
 
     public function cors(string $origin = "*", array $methods = ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"])

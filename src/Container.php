@@ -43,6 +43,10 @@ class Container
         $constructor = $reflector->getConstructor() ?? fn() => null;
         $params = ($constructor instanceof ReflectionMethod) ? $constructor->getParameters() : null;
 
+        if ($reflector->isInterface()) {
+            throw new \ReflectionException("Interface can't instance");
+        }
+
         if (is_null($params)) {
             return $reflector->newInstance();
         }
@@ -60,8 +64,6 @@ class Container
                 $newParams[] = $this->make($name);
                 continue;
             }
-
-            $newParams[] = $param;
         }
 
         return $reflector->newInstance(...$newParams);
