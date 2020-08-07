@@ -2,6 +2,7 @@
 
 namespace Accolon\Route;
 
+use Accolon\Route\Routing\Route;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -67,5 +68,10 @@ class Container
         }
 
         return $reflector->newInstance(...$newParams);
+    }
+
+    public function resolveRoute(Route $route)
+    {
+        // $reflector = 
     }
 }

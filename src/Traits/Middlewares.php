@@ -54,16 +54,10 @@ trait Middlewares
             $middleware = Closure::fromCallable([$middleware, 'handle']);
         }
 
-        $this->stack[] = function (Request $request, Response $response) use ($middleware, $next) {
-            $result = $middleware($request, $response, $next);
-            if ($result instanceof Response === false) {
-                throw new UnexpectedValueException(
-                    'Middleware must return instance of \Accolon\Route\Response'
-                );
-            }
-
-            return $result;    
-        };
+        $this->stack[] = fn(
+            Request $request,
+            Response $response
+        ) => $middleware($request, $response, $next);
 
         return $this;
     }

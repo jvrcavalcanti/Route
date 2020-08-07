@@ -92,6 +92,6 @@ class Route
             return $this->middleware->handle($request, $response, $this->action);
         }
         
-        return ($this->action)($request, $response);
+        return call_user_func($this->action, $request, $response);
     }
 }

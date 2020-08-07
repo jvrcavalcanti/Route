@@ -24,6 +24,9 @@ class Router extends Container
         $this->fallback = fn($response) => $response->text("Not found", 404);
         $this->request = new Request();
         $this->response = new Response();
+
+        $this->bind(Request::class, fn() => new Request($_REQUEST));
+        $this->bind(Response::class, fn() => new Response());
     }
 
     public function redirect(string $url)
@@ -136,8 +139,15 @@ class Router extends Container
     public function dispatch()
     {
         $response = $this->runMiddlewares($this->request, $this->response);
-        if ($response instanceof Response === true) {
+
+        if ($response instanceof Response) {
             echo $response->run();
         }
+
+        if (is_array($response) || is_object($response)) {
+            echo json_encode($response, JSON_PRETTY_PRINT);
+        }
+
+        echo $response;
     }
 }
