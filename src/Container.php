@@ -69,9 +69,4 @@ class Container
 
         return $reflector->newInstance(...$newParams);
     }
-
-    public function resolveRoute(Route $route)
-    {
-        // $reflector = 
-    }
 }
