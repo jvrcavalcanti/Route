@@ -144,10 +144,8 @@ class Router extends Container
             echo $response->run();
         }
 
-        if (is_array($response) || is_object($response)) {
-            echo json_encode($response, JSON_PRETTY_PRINT);
+        if (!is_array($response) && !is_object($response)) {
+            echo $response;
         }
-
-        echo $response;
     }
 }

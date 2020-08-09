@@ -2,12 +2,16 @@
 
 namespace Accolon\Route;
 
+use Accolon\Route\Files\File;
+use Accolon\Route\Traits\Files;
+
 class Request
 {
+    use Files;
+
     private array $data = [];
     private array $cookie = [];
     private array $files = [];
-    private array $headers = [];
 
     public function __construct($requests = [])
     {
@@ -23,9 +27,8 @@ class Request
             }
         }
 
-        $this->cookie = $_COOKIE;
-        $this->files = $_FILES;
-        $this->headers = $_SERVER;
+        $this->cookie = &$_COOKIE;
+        $this->files = $this->convertFilesArrayToObject($this->parseFiles($_FILES));
     }
 
     public function get(string $param): ?string
@@ -59,7 +62,7 @@ class Request
 
     public function getContentType(): string
     {
-        return explode(',', $this->headers['HTTP_ACCEPT'])[0];
+        return explode(',', $_SERVER['HTTP_ACCEPT'])[0];
     }
 
     public function getAuthorization(): ?string
@@ -72,9 +75,18 @@ class Request
         return $_SERVER[$name];
     }
 
-    public function getFile(string $name)
+    public function getFiles()
     {
-        return $this->files[$name] ?? null;
+        return $this->files;
+    }
+
+    public function getFile(string $name): File
+    {
+        if (!isset($this->files[$name])) {
+            throw new \OutOfBoundsException("File with name [{$name}] not exists");
+        }
+
+        return $this->files[$name];
     }
 
     public function method(): string
@@ -87,6 +99,12 @@ class Request
         return $method === $this->method();
     }
 
+    public function getUri()
+    {
+        $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));
+        return $uri == "" ? "/" : $uri;
+    }
+
     public function getCookie(string $name): ?string
     {
         $this->cookie = $_COOKIE;
@@ -95,6 +113,6 @@ class Request
 
     public function getBody()
     {
-        return file_get_contents('php://input') ?? [];
+        return file_get_contents('php://input') ?? null;
     }
 }

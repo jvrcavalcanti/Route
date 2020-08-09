@@ -8,6 +8,13 @@ class Response
     const HTML = "text/html";
     const JSON = "application/json";
 
+    const OK = 200;
+    const CREATED = 201;
+    const BAD_REQUEST = 400;
+    const UNAUTHORIZED = 401;
+    const NOT_FOUND = 404;
+    const ERROR = 500;
+
     private $body;
     private int $code = 200;
     private string $typeContent = "text/plain";
@@ -15,12 +22,30 @@ class Response
     private $status = [
         200 => "200 OK",
         201 => "201 Created",
+        202 => "202 Accepted",
+        203 => "203 Non-Authoritative Information",
         204 => "204 Not content",
+        205 => "205 Reset Content",
+        206 => "206 Partial Content",
+        207 => "207 Multi-Status",
+        208 => "208 Already Reported",
+        226 => "226 IM Used",
+        300 => "300 Multiple Choices",
         400 => "400 Bad Request",
         401 => "401 Unauthorized",
+        402 => "402 Payment Required",
+        403 => "403 Forbidden",
         404 => "404 Not Found",
+        405 => "405 Method Not Allowed",
+        406 => "406 Not Acceptable",
+        407 => "407 Proxy Authentication Required",
+        408 => "408 Request Timeout",
         409 => "409 Confict",
-        500 => "500 Internal Server Error"
+        500 => "500 Internal Server Error",
+        501 => "501 Not Implemented",
+        502 => "502 Bad Gateway",
+        503 => "503 Service Unavailable",
+        504 => "504 Gateway Timeout"
     ];
 
     public function __construct()
@@ -108,11 +133,6 @@ class Response
         foreach ($headers as $name => $value) {
             $this->setHeader($name, $value);
         }
-    }
-
-    public function addHeader(string $name, string $value)
-    {
-        header("{$name}: {$value}", false);
     }
 
     public function run()
