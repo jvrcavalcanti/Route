@@ -37,11 +37,6 @@ class File
         return $this->name;
     }
 
-    private function checkUpdatedName(string $name)
-    {
-        return (bool) ((preg_match("`^[-0-9A-Z_\.]+$`i", $name)) ? true : false);
-    }
-
     public function save(?string $name = null, string $path = "./")
     {
         if (is_null($name)) {
@@ -50,6 +45,8 @@ class File
 
         $type = explode("/", $this->type)[1];
 
-        return move_uploaded_file($this->tmp_name, $path . $name . ".{$type}");
+        $newName = $path . $name . ".{$type}";
+
+        return move_uploaded_file($this->tmp_name, $newName);
     }
 }
