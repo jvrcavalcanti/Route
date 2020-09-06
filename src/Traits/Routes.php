@@ -10,7 +10,7 @@ trait Routes
 
     public function addRoute(string $method, string $url, $action, $middleware): Route
     {
-        if ($url === "/") {
+        if ($url === "/" && $this->prefix === "") {
             $this->routes[$method][$url] = Route::create(
                 $this,
                 $method,
@@ -33,16 +33,18 @@ trait Routes
         $url = preg_replace('~{([^}]*)}~', "([^/]+)", $url);
         $newUrl = str_replace("/", "\/", $url);
 
-        $this->routes[$method][$url] = Route::create(
+        $urlPrefix = ($newUrl !== "\/" ? $this->prefix . $newUrl : $this->prefix) . "(\/)?";
+
+        $this->routes[$method][$urlPrefix] = Route::create(
             $this,
             $method,
-            "/" . $newUrl . "$/",
+            $urlPrefix . "$/",
             $action,
             $middleware ? new $middleware : null,
             $newKeys
         );
 
-        return $this->routes[$method][$url];
+        return $this->routes[$method][$urlPrefix];
     }
 
     public function getRoutes(): array

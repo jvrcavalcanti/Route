@@ -18,6 +18,7 @@ class Router extends Container
     private Closure $fallback;
     private Request $request;
     private Response $response;
+    private string $prefix;
 
     public function __construct()
     {
@@ -27,11 +28,18 @@ class Router extends Container
 
         $this->bind(Request::class, fn() => new Request($_REQUEST));
         $this->bind(Response::class, fn() => new Response());
+        
+        $this->group("");
     }
 
     public function redirect(string $url)
     {
         header("Location: {$url}");
+    }
+
+    public function group(string $pattern)
+    {
+        $this->prefix = $pattern;
     }
 
     public static function setControllersPath(string $path)

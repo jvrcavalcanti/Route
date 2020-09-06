@@ -67,7 +67,7 @@ class Route
 
     public function getKey(int $i)
     {
-        return $this->keys[$i];
+        return $this->keys[$i] ?? null;
     }
 
     public function getMethod()
