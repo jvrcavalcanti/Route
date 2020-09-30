@@ -7,39 +7,39 @@ use Closure;
 
 trait Methods
 {
-    public function get(string $url, $action, $middleware = null): Route
+    public function get(string $url, $action): Route
     {
-        return $this->addRoute("GET", $url, $action, $middleware);
+        return $this->addRoute("GET", $url, $action);
     }
     
-    public function post(string $url, $action, $middleware = null): Route
+    public function post(string $url, $action): Route
     {
-        return $this->addRoute("POST", $url, $action, $middleware);
+        return $this->addRoute("POST", $url, $action);
     }
 
-    public function put(string $url, $action, $middleware = null): Route
+    public function put(string $url, $action): Route
     {
-        return $this->addRoute("PUT", $url, $action, $middleware);
+        return $this->addRoute("PUT", $url, $action);
     }
 
-    public function patch(string $url, $action, $middleware = null): Route
+    public function patch(string $url, $action): Route
     {
-        return $this->addRoute("PATCH", $url, $action, $middleware);
+        return $this->addRoute("PATCH", $url, $action);
     }
 
-    public function delete(string $url, $action, $middleware = null): Route
+    public function delete(string $url, $action): Route
     {
-        return $this->addRoute("DELETE", $url, $action, $middleware);
+        return $this->addRoute("DELETE", $url, $action);
     }
 
-    public function options(string $url, $action, $middleware = null): Route
+    public function options(string $url, $action): Route
     {
-        return $this->addRoute("OPTIONS", $url, $action, $middleware);
+        return $this->addRoute("OPTIONS", $url, $action);
     }
     
-    public function head(string $url, $action, $middleware = null): Route
+    public function head(string $url, $action): Route
     {
-        return $this->addRoute("HEAD", $url, $action, $middleware);
+        return $this->addRoute("HEAD", $url, $action);
     }
 
     public function fallback(Closure $foo)

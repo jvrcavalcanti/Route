@@ -2,20 +2,19 @@
 
 namespace Accolon\Route\Middlewares;
 
-use Accolon\Route\Middleware;
+use Accolon\Route\IMiddleware;
 use Accolon\Route\Request;
-use Accolon\Route\Response;
 
-class Cors implements Middleware
+class Cors implements IMiddleware
 {
-    public function handle(Request $request, Response $response, $next)
+    public function handle(Request $request, $next)
     {
-        $response = $next($request, $response);
 
         if (!$request->isMethod('OPTIONS')) {
-            dd($response);
-            return $response;
+            return $next($request);
         }
+
+        $response = response()->status(200);
 
         $response->setHeader("Access-Control-Allow-Origin", "*");
         $response->setHeader("Access-Control-Allow-Methods", 'GET, POST, PUT, DELETE, OPTIONS');

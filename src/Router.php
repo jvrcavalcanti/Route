@@ -2,20 +2,24 @@
 
 namespace Accolon\Route;
 
+use Accolon\Container\Container;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\Routes;
 use Closure;
+use Psr\Container\ContainerInterface;
 
 class Router
 {
     use Routes, Methods, Middlewares;
 
     private Closure $fallback;
+    private ContainerInterface $container;
 
-    public function __construct()
+    public function __construct(?ContainerInterface $container = null)
     {
+        $this->container = $container ? $container : new Container();
         $this->fallback = fn() => response()->text("Not found", 404);
         $this->startMiddlewareStack();
     }
@@ -23,6 +27,11 @@ class Router
     public function redirect(string $url)
     {
         header("Location: {$url}");
+    }
+
+    public function getContainer()
+    {
+        return $this->container;
     }
 
     public function getUrl(): string

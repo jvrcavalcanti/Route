@@ -11,7 +11,7 @@ trait Middlewares
 {
     private \SplStack $stack;
 
-    public function use($middlewares)
+    public function add($middlewares)
     {
         $next = $this->stack->top();
 
@@ -21,7 +21,7 @@ trait Middlewares
 
         foreach ($middlewares as $middleware) {
             if (is_string($middleware)) {
-                $middleware = new $middleware;
+                $middleware = $this->container->make($middleware);
             }
     
             if ($middleware instanceof IMiddleware) {

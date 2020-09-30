@@ -22,7 +22,8 @@ trait Routes
             return $this->routes[$method][] = Route::create(
                 $method,
                 "/^\/$/",
-                $action
+                $action,
+                $this->container
             );
         }
 
@@ -40,8 +41,9 @@ trait Routes
 
         return $this->routes[$method][] = Route::create(
             $method,
-            $newuri . "[\/]?$/",
+            '/' . $newuri . "(\/)?$/",
             $action,
+            $this->container,
             $newKeys
         );
     }

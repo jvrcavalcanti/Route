@@ -25,6 +25,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "accolon/container": "^1.0"
     }
 }
