@@ -2,26 +2,31 @@
 
 namespace Accolon\Route\Traits;
 
-use Accolon\Route\Routing\Route;
+use Accolon\Route\Route;
 
 trait Routes
 {
-    private array $routes;
+    private array $routes = [
+        "GET" => [],
+        "POST" => [],
+        "PUT" => [],
+        "PATCH" => [],
+        "DELETE" => [],
+        "OPTIONS" => [],
+        "HEAD" => []
+    ];
 
-    public function addRoute(string $method, string $url, $action, $middleware): Route
+    public function addRoute(string $method, string $uri, $action): Route
     {
-        if ($url === "/" && $this->prefix === "") {
-            $this->routes[$method][$url] = Route::create(
-                $this,
+        if ($uri === "/") {
+            return $this->routes[$method][] = Route::create(
                 $method,
                 "/^\/$/",
-                $action,
-                $middleware ? new $middleware : null
+                $action
             );
-            return $this->routes[$method][$url];
         }
 
-        preg_match_all("~\{\s* ([a-zA-Z_][a-zA-Z0-9_-]*) \}~x", $url, $keys, PREG_SET_ORDER);
+        preg_match_all("~\{\s* ([a-zA-Z_][a-zA-Z0-9_-]*) \}~x", $uri, $keys, PREG_SET_ORDER);
 
         $newKeys = [];
 
@@ -30,21 +35,15 @@ trait Routes
             $newKeys[] = $key[1];
         }
 
-        $url = preg_replace('~{([^}]*)}~', "([^/]+)", $url);
-        $newUrl = str_replace("/", "\/", $url);
+        $uri = preg_replace('~{([^}]*)}~', "([^/]+)", $uri);
+        $newuri = str_replace("/", "\/", $uri);
 
-        $urlPrefix = ($newUrl !== "\/" ? $this->prefix . $newUrl : $this->prefix) . "(\/)?";
-
-        $this->routes[$method][$urlPrefix] = Route::create(
-            $this,
+        return $this->routes[$method][] = Route::create(
             $method,
-            $urlPrefix . "$/",
+            $newuri . "[\/]?$/",
             $action,
-            $middleware ? new $middleware : null,
             $newKeys
         );
-
-        return $this->routes[$method][$urlPrefix];
     }
 
     public function getRoutes(): array

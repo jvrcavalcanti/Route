@@ -2,44 +2,44 @@
 
 namespace Accolon\Route\Traits;
 
-use Accolon\Route\Routing\Route;
+use Accolon\Route\Route;
 use Closure;
 
 trait Methods
 {
     public function get(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("get", $url, $action, $middleware);
+        return $this->addRoute("GET", $url, $action, $middleware);
     }
     
     public function post(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("post", $url, $action, $middleware);
+        return $this->addRoute("POST", $url, $action, $middleware);
     }
 
     public function put(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("put", $url, $action, $middleware);
+        return $this->addRoute("PUT", $url, $action, $middleware);
     }
 
     public function patch(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("patch", $url, $action, $middleware);
+        return $this->addRoute("PATCH", $url, $action, $middleware);
     }
 
     public function delete(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("delete", $url, $action, $middleware);
+        return $this->addRoute("DELETE", $url, $action, $middleware);
     }
 
     public function options(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("options", $url, $action, $middleware);
+        return $this->addRoute("OPTIONS", $url, $action, $middleware);
     }
     
     public function head(string $url, $action, $middleware = null): Route
     {
-        return $this->addRoute("head", $url, $action, $middleware);
+        return $this->addRoute("HEAD", $url, $action, $middleware);
     }
 
     public function fallback(Closure $foo)
