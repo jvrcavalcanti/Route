@@ -36,6 +36,13 @@ class Router
         return $this->container;
     }
 
+    public function registerMiddlewares(array $middlewares)
+    {
+        foreach ($middlewares as $name => $middleware) {
+            $this->container->bind($name, $middleware);
+        }
+    }
+
     public function getUrl(): string
     {
         $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));

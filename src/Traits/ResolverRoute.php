@@ -54,7 +54,7 @@ trait ResolverRoute
                 continue;
             }
 
-            $newParams[$param->name] = $this->container->make($type);
+            $newParams[] = $this->container->make($type);
         }
 
         return $newParams;

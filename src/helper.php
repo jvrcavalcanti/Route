@@ -16,12 +16,11 @@ function request($param = null)
 
 function router(): Router
 {
-    if (!isset($GLOBALS['router'])) {
-        throw new \Exception("Not exists router in global scope");
+    if (!isset($GLOBALS['router']) || !isset($GLOBALS['app'])) {
+        throw new \Exception("Not exists router/app in global scope");
     }
 
-    global $router;
-    return $router;
+    return $GLOBALS['router'] ?? $GLOBALS['app'];
 }
 
 function app($id = null)
