@@ -11,15 +11,6 @@ trait ResolverRoute
         $reflection = null;
         $params = [];
 
-        if (is_callable($route)) {
-            $reflection = new \ReflectionFunction($route);
-            $params = $reflection->getParameters();
-
-            $newParams = $this->parseParams($params);
-
-            return $reflection->getClosure()(...$newParams);
-        }
-
         if (is_array($route)) {
             $class = $this->container->get($route[0]);
             $method = $route[1];
@@ -30,6 +21,15 @@ trait ResolverRoute
             $newParams = $this->parseParams($params);
 
             return ($this->container->make($class))->$method(...$newParams);
+        }
+
+        if (is_callable($route)) {
+            $reflection = new \ReflectionFunction($route);
+            $params = $reflection->getParameters();
+
+            $newParams = $this->parseParams($params);
+
+            return $reflection->getClosure()(...$newParams);
         }
     }
 

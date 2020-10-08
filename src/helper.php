@@ -14,21 +14,21 @@ function request($param = null)
     return is_null($param) ? new Request($_REQUEST) : request()->get($param);
 }
 
-function router(): Router
+function app(): Router
 {
-    if (!isset($GLOBALS['router']) || !isset($GLOBALS['app'])) {
+    if (!isset($GLOBALS['router']) && !isset($GLOBALS['app'])) {
         throw new \Exception("Not exists router/app in global scope");
     }
 
     return $GLOBALS['router'] ?? $GLOBALS['app'];
 }
 
-function app($id = null)
+function container($id = null)
 {
-    return is_null($id) ? router()->getContainer() : app()->get($id);
+    return is_null($id) ? app()->getContainer() : container()->get($id);
 }
 
 function resolve(string $class)
 {
-    return app()->make($class);
+    return container()->make($class);
 }
