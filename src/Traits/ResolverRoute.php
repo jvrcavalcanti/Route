@@ -3,7 +3,6 @@
 namespace Accolon\Route\Traits;
 
 use Accolon\Route\Request;
-use Accolon\Route\Response;
 
 trait ResolverRoute
 {
@@ -22,7 +21,7 @@ trait ResolverRoute
         }
 
         if (is_array($route)) {
-            $class = $route[0];
+            $class = $this->container->get($route[0]);
             $method = $route[1];
 
             $reflection = new \ReflectionClass($class);

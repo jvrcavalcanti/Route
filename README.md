@@ -8,14 +8,6 @@ use Accolon\Route\Router;
 
 require_once "../vendor/autoload.php";
 
-function dd($var)
-{
-    echo "<pre>";
-    var_dump($var);
-    echo "</pre>";
-    die();
-}
-
 class User
 {
     //

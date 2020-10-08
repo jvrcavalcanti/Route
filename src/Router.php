@@ -6,22 +6,24 @@ use Accolon\Container\Container;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
+use Accolon\Route\Traits\Providers;
 use Accolon\Route\Traits\Routes;
 use Closure;
-use Psr\Container\ContainerInterface;
 
 class Router
 {
-    use Routes, Methods, Middlewares;
+    use Routes, Methods, Middlewares, Providers;
 
     private Closure $fallback;
-    private ContainerInterface $container;
+    private Container $container;
 
-    public function __construct(?ContainerInterface $container = null)
+    public function __construct(?Container $container = null)
     {
         $this->container = $container ? $container : new Container();
         $this->fallback = fn() => response()->text("Not found", 404);
         $this->startMiddlewareStack();
+
+        $this->container->singletons(Container::class, $this->container);
     }
 
     public function redirect(string $url)
@@ -93,7 +95,7 @@ class Router
 
     public function dispatch()
     {
-        $response = $this->runMiddlewares(new Request($_REQUEST));
+        $response = $this->runMiddlewares(request());
 
         if ($response instanceof Response) {
             echo $response->run();
