@@ -11,7 +11,7 @@ class RequestHeaders
         $this->data = $data;
     }
 
-    public function __get($name)
+    public function get($name)
     {
         return $this->data[$name] ?? null;
     }
