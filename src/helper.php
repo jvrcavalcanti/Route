@@ -1,12 +1,15 @@
 <?php
 
 use Accolon\Route\Request;
-use Accolon\Route\Response;
+use Accolon\Route\ResponseFactory;
 use Accolon\Route\Router;
 
-function response(): Response
+function response(...$params)
 {
-    return new Response();
+    if (!empty($params)) {
+        return (new ResponseFactory)->text(...$params);
+    }
+    return new ResponseFactory();
 }
 
 function request($param = null)

@@ -2,7 +2,9 @@
 
 namespace Accolon\Route;
 
-class Response
+use Accolon\Route\Headers\ResponseHeaders;
+
+abstract class Response
 {
     const TEXT = "text/plain";
     const HTML = "text/html";
@@ -15,11 +17,13 @@ class Response
     const NOT_FOUND = 404;
     const ERROR = 500;
 
-    private $body;
-    private int $code = 200;
-    private string $typeContent = "text/plain";
-    private string $charset = "UTF-8";
-    private $status = [
+    public ResponseHeaders $headers;
+
+    protected $body;
+    protected int $code = 200;
+    protected string $typeContent = "text/plain";
+    protected string $charset = "UTF-8";
+    protected $status = [
         200 => "200 OK",
         201 => "201 Created",
         202 => "202 Accepted",
@@ -48,26 +52,13 @@ class Response
         504 => "504 Gateway Timeout"
     ];
 
+    abstract public function handle($body, int $code = 0, array $headers = []);
+
     public function __construct()
     {
         $this->cookie = $_COOKIE;
+        $this->headers = new ResponseHeaders();
         header_remove();
-    }
-
-    public function setCookie(string $name, $value = null, $options = []): bool
-    {
-        $result = setcookie(
-            $name,
-            base64_encode(serialize(htmlentities($value))),
-            time() + ($options["expire"] ?? 3600),
-            $options["path"] ?? "/"
-        );
-
-        if ($result) {
-            $this->cookie = $_COOKIE;
-        }
-
-        return $result;
     }
 
     public function setTypeContent(string $type): Response
@@ -82,57 +73,33 @@ class Response
         return $this;
     }
 
-    public function json($body, int $code = 0, array $headers = [])
-    {
-        return $this->setTypeContent(Response::JSON)->send($body, $code, $headers);
-    }
+    // public function json($body, int $code = 0, array $headers = [])
+    // {
+    //     return $this->setTypeContent(Response::JSON)->send($body, $code, $headers);
+    // }
 
-    public function text(string $body, int $code = 0, array $headers = [])
-    {
-        return $this->setTypeContent(Response::TEXT)->send($body, $code, $headers);
-    }
+    // public function text(string $body, int $code = 0, array $headers = [])
+    // {
+    //     return $this->setTypeContent(Response::TEXT)->send($body, $code, $headers);
+    // }
 
-    public function html(string $body, int $code = 0, array $headers = [])
-    {
-        return $this->setTypeContent(Response::HTML)->send($body, $code, $headers);
-    }
+    // public function html(string $body, int $code = 0, array $headers = [])
+    // {
+    //     return $this->setTypeContent(Response::HTML)->send($body, $code, $headers);
+    // }
 
-    public function send($body, int $code = 0, array $headers = [])
+    protected function send(string $body, int $code = 0, array $headers = [])
     {
-        switch ($this->typeContent) {
-            case Response::JSON:
-                $this->body = json_encode($body);
-                break;
-            case Response::HTML:
-                $this->body = $body;
-                break;
-            case Response::TEXT:
-                $this->body = $body;
-                break;
-        }
-
+        $this->body = $body;
         $this->setHeaders($headers);
-
         return $this->status($code == 0 ? $this->code : $code);
     }
 
     private function header()
     {
         http_response_code($this->code);
-        header("Content-Type: {$this->typeContent}; charset={$this->charset}");
+        header("Content-Type: {$this->typeContent}; charset={$this->charset}", $this->code);
         return $this->body;
-    }
-
-    public function setHeader(string $name, string $value)
-    {
-        header("{$name}: {$value}", true);
-    }
-
-    public function setHeaders(array $headers)
-    {
-        foreach ($headers as $name => $value) {
-            $this->setHeader($name, $value);
-        }
     }
 
     public function run()
@@ -144,5 +111,28 @@ class Response
         }
 
         return $body;
+    }
+
+    public function setHeaders(array $headers)
+    {
+        foreach ($headers as $name => $value) {
+            $this->headers->set($name, $value);
+        }
+    }
+    
+    public function setCookie(string $name, $value = null, $options = []): bool
+    {
+        $result = setcookie(
+            $name,
+            base64_encode(serialize(htmlentities($value))),
+            time() + ($options["expire"] ?? 3600),
+            $options["path"] ?? "/"
+        );
+
+        if ($result) {
+            $this->cookie = $_COOKIE;
+        }
+
+        return $result;
     }
 }

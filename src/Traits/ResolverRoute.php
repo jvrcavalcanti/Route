@@ -49,7 +49,7 @@ trait ResolverRoute
                 continue;
             }
 
-            if ($type === Request::class) {
+            if ($type === Request::class || !$param->hasType()) {
                 $newParams[$param->name] = request();
                 continue;
             }

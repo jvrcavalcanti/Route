@@ -16,10 +16,10 @@ class Cors implements IMiddleware
 
         $response = response()->status(200);
 
-        $response->setHeader("Access-Control-Allow-Origin", "*");
-        $response->setHeader("Access-Control-Allow-Methods", 'GET, POST, PUT, DELETE, OPTIONS');
-        $response->setHeader("Access-Control-Max-Age", 3600);
-        $response->setHeader("Access-Control-Allow-Headers", 'Content-Type, Accept, Authorization, X-Requested-With, Application');
+        $response->headers->set("Access-Control-Allow-Origin", "*");
+        $response->headers->set("Access-Control-Allow-Methods", 'GET, POST, PUT, DELETE, OPTIONS');
+        $response->headers->set("Access-Control-Max-Age", 3600);
+        $response->headers->set("Access-Control-Allow-Headers", 'Content-Type, Accept, Authorization, X-Requested-With, Application');
 
         return $response;
     }

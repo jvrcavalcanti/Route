@@ -3,6 +3,7 @@
 namespace Accolon\Route;
 
 use Accolon\Route\Files\File;
+use Accolon\Route\Headers\RequestHeaders;
 use Accolon\Route\Traits\Files;
 
 class Request
@@ -12,23 +13,47 @@ class Request
     private array $data = [];
     private array $cookie = [];
     private array $files = [];
+    public RequestHeaders $headers;
 
-    public function __construct($requests = [])
+    public function __construct($requests = null)
     {
-        foreach ($requests as $key => $value) {
+        foreach ($requests ?? $_REQUEST as $key => $value) {
             $this->data[$key] = htmlentities($value);
         }
 
-        $body = json_decode($this->getBody());
+        $this->initBody();
+        $this->initHeaders();
+        $this->cookie = &$_COOKIE;
+        $this->files = $this->convertFilesArrayToObject($this->parseFiles($_FILES));
+    }
+    
+    protected function initBody()
+    {
+        json_decode($this->getBody());
 
-        if (is_array($body) || is_object($body)) {
+        if (json_last_error() === JSON_ERROR_NONE) {
             foreach (json_decode($this->getBody()) as $key => $value) {
                 $this->data[$key] = htmlentities($value);
             }
         }
+    }
 
-        $this->cookie = &$_COOKIE;
-        $this->files = $this->convertFilesArrayToObject($this->parseFiles($_FILES));
+    protected function initHeaders()
+    {
+        $headers = [];
+        foreach ($_SERVER as $key => $value) {
+            if (substr($key, 0, 5) <> 'HTTP_') {
+                continue;
+            }
+            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+            $headers[$header] = $value;
+        }
+        $this->headers = new RequestHeaders($headers);
+    }
+
+    public function __get($name)
+    {
+        return $this->get($name);
     }
 
     public function get(string $param): ?string
@@ -63,16 +88,6 @@ class Request
     public function getContentType(): string
     {
         return explode(',', $_SERVER['HTTP_ACCEPT'])[0];
-    }
-
-    public function getAuthorization(): ?string
-    {
-        return $_SERVER["HTTP_AUTHORIZATION"] ?? null;
-    }
-
-    public function getHeader(string $name)
-    {
-        return $_SERVER[$name];
     }
 
     public function getFiles()
