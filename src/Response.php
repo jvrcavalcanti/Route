@@ -2,7 +2,7 @@
 
 namespace Accolon\Route;
 
-use Accolon\Route\Headers\ResponseHeaders;
+use Accolon\Route\Headers;
 
 abstract class Response
 {
@@ -57,7 +57,7 @@ abstract class Response
     public function __construct()
     {
         $this->cookie = $_COOKIE;
-        $this->headers = new ResponseHeaders();
+        $this->headers = new Headers();
         header_remove();
     }
 
@@ -72,21 +72,6 @@ abstract class Response
         $this->code = $code;
         return $this;
     }
-
-    // public function json($body, int $code = 0, array $headers = [])
-    // {
-    //     return $this->setTypeContent(Response::JSON)->send($body, $code, $headers);
-    // }
-
-    // public function text(string $body, int $code = 0, array $headers = [])
-    // {
-    //     return $this->setTypeContent(Response::TEXT)->send($body, $code, $headers);
-    // }
-
-    // public function html(string $body, int $code = 0, array $headers = [])
-    // {
-    //     return $this->setTypeContent(Response::HTML)->send($body, $code, $headers);
-    // }
 
     protected function send(string $body, int $code = 0, array $headers = [])
     {

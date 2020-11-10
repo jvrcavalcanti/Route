@@ -3,7 +3,7 @@
 namespace Accolon\Route;
 
 use Accolon\Route\Files\File;
-use Accolon\Route\Headers\RequestHeaders;
+use Accolon\Route\Headers;
 use Accolon\Route\Traits\Files;
 
 class Request
@@ -13,7 +13,7 @@ class Request
     private array $data = [];
     private array $cookie = [];
     private array $files = [];
-    public RequestHeaders $headers;
+    public Headers $headers;
 
     public function __construct($requests = null)
     {
@@ -48,7 +48,7 @@ class Request
             $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
             $headers[$header] = $value;
         }
-        $this->headers = new RequestHeaders($headers);
+        $this->headers = new Headers($headers);
     }
 
     public function __get($name)
@@ -112,6 +112,11 @@ class Request
     public function isMethod(string $method): bool
     {
         return $method === $this->method();
+    }
+
+    public function getAuthorization()
+    {
+        return $this->headers->get('Authorization') ?? null;
     }
 
     public function getUri()
