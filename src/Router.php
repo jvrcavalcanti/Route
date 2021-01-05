@@ -12,7 +12,7 @@ use Closure;
 
 class Router
 {
-    use Routes, Methods, Middlewares, Providers;
+    use Routes, Methods, Middlewares;
 
     private Closure $fallback;
     private Container $container;
