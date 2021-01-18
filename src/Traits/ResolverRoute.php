@@ -45,12 +45,12 @@ trait ResolverRoute
             }
 
             if (request()->has($param->name)) {
-                $newParams[$param->name] = request($param->name);
+                $newParams[] = request($param->name);
                 continue;
             }
 
             if ($type === Request::class || !$param->hasType()) {
-                $newParams[$param->name] = request();
+                $newParams[] = request();
                 continue;
             }
 

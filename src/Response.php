@@ -17,7 +17,7 @@ abstract class Response
     const NOT_FOUND = 404;
     const ERROR = 500;
 
-    public ResponseHeaders $headers;
+    public Headers $headers;
 
     protected $body;
     protected int $code = 200;
