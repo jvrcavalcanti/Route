@@ -6,7 +6,6 @@ use Accolon\Container\Container;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
-use Accolon\Route\Traits\Providers;
 use Accolon\Route\Traits\Routes;
 use Closure;
 
@@ -15,6 +14,7 @@ class Router
     use Routes, Methods, Middlewares;
 
     private Closure $fallback;
+    private string $prefix = '';
     private Container $container;
 
     public function __construct(?Container $container = null)
@@ -24,6 +24,11 @@ class Router
         $this->startMiddlewareStack();
 
         $this->container->singletons(Container::class, $this->container);
+    }
+
+    public function prefix(string $prefix)
+    {
+        $this->prefix = $prefix;
     }
 
     public function redirect(string $url)

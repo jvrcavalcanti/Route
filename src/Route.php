@@ -5,7 +5,6 @@ namespace Accolon\Route;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\ResolverRoute;
-use Closure;
 use Psr\Container\ContainerInterface;
 
 class Route
