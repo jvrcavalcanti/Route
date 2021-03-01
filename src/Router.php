@@ -33,11 +33,19 @@ class Router
 
     public function prefix(string $prefix)
     {
+        if ($prefix[0] != '/') {
+            $prefix = '/' . $prefix;
+        }
+
         $this->prefix = $prefix;
     }
 
     public function addPrefix(string $prefix)
     {
+        if ($prefix[0] != '/') {
+            $prefix = '/' . $prefix;
+        }
+        
         $this->prefix .= $prefix;
     }
 

@@ -21,11 +21,7 @@ $router->prefix('/api');
 
 $router->addPrefix('/user');
 
-// $router->get('/', fn() => response()->json(['message' => 'Welcome']));
-
-$router->get('/', function () {
-    throw new \InvalidArgumentException('oi');
-});
+$router->get('/', fn() => response()->json(['message' => 'Welcome']));
 
 // dd($router->getRoutes());
 
