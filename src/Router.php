@@ -3,24 +3,29 @@
 namespace Accolon\Route;
 
 use Accolon\Container\Container;
+use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\Routes;
-use Closure;
 
 class Router
 {
     use Routes, Methods, Middlewares;
 
-    private Closure $fallback;
+    private bool $debug;
+    private \Closure $fallback;
     private string $prefix = '';
     private Container $container;
 
-    public function __construct(?Container $container = null)
+    public function __construct(?Container $container = null, bool $debug = true)
     {
+        $this->debug = $debug;
         $this->container = $container ? $container : new Container();
-        $this->fallback = fn() => response()->text("Not found", 404);
+        $this->fallback = fn() => response()->html(
+            "<center><h1>500 Internal Server Error</h1><hr>Accolon Route PHP</center>",
+            500
+        );
         $this->startMiddlewareStack();
 
         $this->container->singletons(Container::class, $this->container);
@@ -29,6 +34,11 @@ class Router
     public function prefix(string $prefix)
     {
         $this->prefix = $prefix;
+    }
+
+    public function addPrefix(string $prefix)
+    {
+        $this->prefix .= $prefix;
     }
 
     public function redirect(string $url)
@@ -54,8 +64,7 @@ class Router
         if (strpos($uri, "/public") !== false) {
             $uri = explode("/public", $uri)[1];
         }
-        $uri = $uri == "" ? "/" : $uri;
-        return $uri;
+        return $uri === "" ? "/" : $uri;
     }
 
     public function getMethod(): string
@@ -71,8 +80,7 @@ class Router
         $route = null;
 
         if (!isset($this->routes[$method])) {
-            $fallback = $this->fallback;
-            return $fallback();
+            abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
         }
 
         foreach ($this->routes[$method] as $routeM) {
@@ -96,8 +104,7 @@ class Router
         }
 
         if (!$route) {
-            $fallback = $this->fallback;
-            return $fallback();
+            abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
         }
 
         /** @var \Accolon\Route\Route $route */
@@ -107,14 +114,20 @@ class Router
 
     public function dispatch()
     {
-        $response = $this->runMiddlewares(request());
-
-        if ($response instanceof Response) {
-            echo $response->run();
-        }
-
-        if (!is_array($response) && !is_object($response)) {
-            echo $response;
+        try {
+            $response = $this->runMiddlewares(request());
+        } catch (HttpException $e) {
+            $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
+        } catch (\Exception $e) {
+            $response = ($this->fallback)();
+        } finally {
+            if ($response instanceof Response) {
+                echo $response->run();
+            }
+    
+            if (!is_array($response) && !is_object($response)) {
+                echo $response;
+            }
         }
     }
 }

@@ -17,9 +17,15 @@ $router = new Router();
 
 $router->get('/', fn() => 'oi');
 
-$router->prefix('api');
+$router->prefix('/api');
 
-$router->get('/', fn() => response()->json(['message' => 'Welcome']));
+$router->addPrefix('/user');
+
+// $router->get('/', fn() => response()->json(['message' => 'Welcome']));
+
+$router->get('/', function () {
+    throw new \InvalidArgumentException('oi');
+});
 
 // dd($router->getRoutes());
 

@@ -4,6 +4,7 @@ namespace Accolon\Route;
 
 use Accolon\Route\Responses\JsonResponse;
 use Accolon\Route\Responses\TextResponse;
+use Accolon\Route\Responses\HtmlResponse;
 
 class ResponseFactory
 {
@@ -18,6 +19,12 @@ class ResponseFactory
     public function json($body, int $code = 0, array $headers = [])
     {
         $this->response = new JsonResponse();
+        return $this->run($body, $code, $headers);
+    }
+
+    public function html($body, int $code = 0, array $headers = [])
+    {
+        $this->response = new HtmlResponse();
         return $this->run($body, $code, $headers);
     }
 

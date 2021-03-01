@@ -42,8 +42,17 @@ trait Methods
         return $this->addRoute("HEAD", $url, $action);
     }
 
-    public function fallback(Closure $foo)
+    public function fallback($handler)
     {
-        $this->fallback = $foo;
+        if (is_array($handler)) {
+            $this->fallback = \Closure::fromCallable([
+                $this->container->make($handler[0]),
+                $handler[1]
+            ]);
+        }
+        
+        if (is_callable($handler)) {
+            $this->fallback = $handler;
+        }
     }
 }
