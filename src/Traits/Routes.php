@@ -6,7 +6,7 @@ use Accolon\Route\Route;
 
 trait Routes
 {
-    private array $routes = [
+    protected array $routes = [
         "GET" => [],
         "POST" => [],
         "PUT" => [],

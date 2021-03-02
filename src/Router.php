@@ -13,10 +13,10 @@ class Router
 {
     use Routes, Methods, Middlewares;
 
-    private bool $debug;
-    private \Closure $fallback;
-    private string $prefix = '';
-    private Container $container;
+    protected bool $debug;
+    protected \Closure $fallback;
+    protected string $prefix = '';
+    protected Container $container;
 
     public function __construct(?Container $container = null, bool $debug = true)
     {

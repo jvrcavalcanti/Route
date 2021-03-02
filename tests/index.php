@@ -1,6 +1,6 @@
 <?php
 
-use Accolon\Route\Router;
+use Accolon\Route\App;
 
 require_once "../vendor/autoload.php";
 
@@ -13,16 +13,22 @@ function dd($var)
     exit;
 }
 
-$router = new Router();
+$app = new App();
 
-$router->get('/', fn() => 'oi');
+$routerApi = $app->newRouter();
 
-$router->prefix('/api');
+$routerApi->prefix('api');
 
-$router->addPrefix('/user');
+$routerApi->post('/', fn() => 'Welcome Api');
 
-$router->get('/', fn() => response()->json(['message' => 'Welcome']));
+$app->router($routerApi);
 
-// dd($router->getRoutes());
+$app->get('/', fn() => 'oi');
 
-$router->dispatch();
+$app->prefix('/user');
+
+$app->get('/', fn() => response()->json(['message' => 'Welcome']));
+
+// dd($app->getRoutes());
+
+$app->dispatch();

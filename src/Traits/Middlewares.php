@@ -9,7 +9,7 @@ use Closure;
 
 trait Middlewares
 {
-    private \SplStack $stack;
+    protected \SplStack $stack;
 
     public function add($middlewares)
     {

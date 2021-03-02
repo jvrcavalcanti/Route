@@ -82,8 +82,11 @@ abstract class Response
 
     private function header()
     {
+        $contentLength = strlen($this->body);
         http_response_code($this->code);
-        header("Content-Type: {$this->typeContent}; charset={$this->charset}", $this->code);
+        header("Content-Type: {$this->typeContent}", $this->code);
+        header("Accept-Charset: {$this->charset}");
+        header("Content-Length: {$contentLength}");
         return $this->body;
     }
 
