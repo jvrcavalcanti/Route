@@ -11,7 +11,7 @@ trait Middlewares
 {
     protected \SplStack $stack;
 
-    public function add($middlewares)
+    public function middleware($middlewares)
     {
         $next = $this->stack->top();
 

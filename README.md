@@ -1,19 +1,29 @@
 ```php
 <?php
 
+use Accolon\Route\App;
+use Accolon\Route\Controller as RouteController;
 use Accolon\Route\Middlewares\Cors;
 use Accolon\Route\Request;
 use Accolon\Route\Response;
-use Accolon\Route\Router;
 
 require_once "../vendor/autoload.php";
+
+function dd($var)
+{
+    ?>
+    <pre>
+    <?php
+    var_dump($var);
+    exit;
+}
 
 class User
 {
     //
 }
 
-class Controller
+class Controller extends RouteController
 {
     private User $user;
 
@@ -22,15 +32,19 @@ class Controller
         $this->user = $user;
     }
 
-    public function show(\stdClass $class)
+    public function show(Request $request)
     {
-        dd($class);
+        $this->validate([
+            'id' => 'int'
+        ]);
+
+        return response()->text('success');
     }
 }
 
-$router = new Router();
+$router = new App();
 
-$router->add(Cors::class);
+$router->middleware(Cors::class);
 
 $router->get('/user/{id}', [Controller::class, 'show']);
 

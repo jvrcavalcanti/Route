@@ -1,8 +1,10 @@
 <?php
 
+use Accolon\Container\Container;
 use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Request;
 use Accolon\Route\ResponseFactory;
+use Accolon\Route\Router;
 
 if (!function_exists('response')) {
     function response(...$params)
@@ -25,5 +27,26 @@ if (!function_exists('abort')) {
     function abort($message, int $code = 400, string $typeContent = "html")
     {
         throw new HttpException($code, $message, $typeContent);
+    }
+}
+
+if (!function_exists('app')) {
+    function app(): ?Router
+    {
+        return $GLOBALS['app'] ?? $GLOBALS['router'] ?? null;
+    }
+}
+
+if (!function_exists('container')) {
+    function container(): Container
+    {
+        return app()->getContainer();
+    }
+}
+
+if (!function_exists('resolve')) {
+    function resolve($id)
+    {
+        return container()->make($id);
     }
 }

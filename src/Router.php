@@ -4,6 +4,7 @@ namespace Accolon\Route;
 
 use Accolon\Container\Container;
 use Accolon\Route\Exceptions\HttpException;
+use Accolon\Route\Exceptions\ValidateFailException;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
@@ -22,8 +23,8 @@ class Router
     {
         $this->debug = $debug;
         $this->container = $container ? $container : new Container();
-        $this->fallback = fn() => response()->html(
-            "<center><h1>500 Internal Server Error</h1><hr>Accolon Route PHP</center>",
+        $this->fallback = fn($message) => response()->html(
+            "<center><h1>500 {$message}</h1><hr>Accolon Route PHP</center>",
             500
         );
         $this->startMiddlewareStack();
@@ -127,7 +128,7 @@ class Router
         } catch (HttpException $e) {
             $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
-            $response = ($this->fallback)();
+            $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
         } finally {
             if ($response instanceof Response) {
                 echo $response->run();

@@ -1,6 +1,10 @@
 <?php
 
 use Accolon\Route\App;
+use Accolon\Route\Controller as RouteController;
+use Accolon\Route\Middlewares\Cors;
+use Accolon\Route\Request;
+use Accolon\Route\Response;
 
 require_once "../vendor/autoload.php";
 
@@ -13,22 +17,34 @@ function dd($var)
     exit;
 }
 
-$app = new App();
+class User
+{
+    //
+}
 
-$routerApi = $app->newRouter();
+class Controller extends RouteController
+{
+    private User $user;
 
-$routerApi->prefix('api');
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
 
-$routerApi->post('/', fn() => 'Welcome Api');
+    public function show(Request $request)
+    {
+        $this->validate([
+            'id' => 'int'
+        ]);
 
-$app->router($routerApi);
+        return response()->text('success');
+    }
+}
 
-$app->get('/', fn() => 'oi');
+$router = new App();
 
-$app->prefix('/user');
+$router->middleware(Cors::class);
 
-$app->get('/', fn() => response()->json(['message' => 'Welcome']));
+$router->get('/user/{id}', [Controller::class, 'show']);
 
-// dd($app->getRoutes());
-
-$app->dispatch();
+$router->dispatch();
