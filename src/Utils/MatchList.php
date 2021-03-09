@@ -23,7 +23,7 @@ class MatchList implements \ArrayAccess
         }
 
         foreach ($this->list as $pattern => $value) {
-            if (preg_match($pattern, $subject)) {
+            if (preg_match_all($pattern, $subject)) {
                 return true;
             }
         }
@@ -40,17 +40,16 @@ class MatchList implements \ArrayAccess
         }
 
         foreach ($this->list as $pattern => $value) {
-            if (preg_match($pattern, $subject)) {
+            if (preg_match_all($pattern, $subject)) {
                 return $value;
             }
         }
 
-        throw new \OutOfBoundsException('Not found subject');
+        return null;
     }
 
     public function offsetSet($pattern, $value)
     {
-        $pattern = str_replace('/', '\/', $pattern);
         $this->list[$this->prefix . $pattern . $this->suffix] = $value;
     }
 

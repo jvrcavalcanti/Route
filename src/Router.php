@@ -21,6 +21,7 @@ class Router
 
     public function __construct(?Container $container = null, bool $debug = true)
     {
+        $this->initRoutes();
         $this->debug = $debug;
         $this->container = $container ? $container : new Container();
         $this->fallback = fn($message) => response()->html(
@@ -92,31 +93,24 @@ class Router
             abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
         }
 
-        foreach ($this->routes[$method] as $routeM) {
-            /** @var \Accolon\Route\Route $routeM */
-
-            $patternUri = $routeM->uri;
-
-            if (preg_match_all($patternUri, $uri, $keys, PREG_SET_ORDER)) {
-                unset($keys[0][0]);
-                $keys = $keys[0];
-
-                $cont = 0;
-                foreach ($keys as $key) {
-                    $_REQUEST[$routeM->getKey($cont)] = $key;
-                    $cont ++;
-                }
-
-                $route = $routeM;
-                break;
-            }
-        }
+        $route = $this->routes[$method][$uri];
 
         if (!$route) {
             abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
         }
 
         /** @var \Accolon\Route\Route $route */
+
+        preg_match_all($route->uri, $uri, $keys, PREG_SET_ORDER);
+
+        unset($keys[0][0]);
+        $keys = $keys[0];
+
+        $cont = 0;
+        foreach ($keys as $key) {
+            $_REQUEST[$route->getKey($cont)] = $key;
+            $cont ++;
+        }
 
         return $route->run($request);
     }

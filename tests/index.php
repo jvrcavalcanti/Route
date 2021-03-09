@@ -37,11 +37,13 @@ class Controller extends RouteController
             'id' => 'int'
         ]);
 
-        return response()->text('success');
+        return response()->text("id: {$request->get('id')}");
     }
 }
 
 $router = new App();
+
+$router->get('/', fn() => 'oi');
 
 $router->middleware(Cors::class);
 
