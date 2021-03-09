@@ -40,7 +40,7 @@ if (!function_exists('app')) {
 if (!function_exists('container')) {
     function container(): Container
     {
-        return app()->getContainer();
+        return app()->getContainer() ?? new Container();
     }
 }
 

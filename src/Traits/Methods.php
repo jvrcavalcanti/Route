@@ -54,4 +54,18 @@ trait Methods
             $this->fallback = $handler;
         }
     }
+
+    public function notFound($handler)
+    {
+        if (is_array($handler)) {
+            $this->notFound = \Closure::fromCallable([
+                $this->container->make($handler[0]),
+                $handler[1]
+            ]);
+        }
+        
+        if (is_callable($handler)) {
+            $this->notFound = $handler;
+        }
+    }
 }

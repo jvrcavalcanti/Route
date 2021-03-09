@@ -15,6 +15,7 @@ class Router
     use Routes, Methods, Middlewares;
 
     protected bool $debug;
+    protected \Closure $notFound;
     protected \Closure $fallback;
     protected string $prefix = '';
     protected Container $container;
@@ -24,6 +25,7 @@ class Router
         $this->initRoutes();
         $this->debug = $debug;
         $this->container = $container ? $container : new Container();
+        $this->notFound = fn() => abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
         $this->fallback = fn($message) => response()->html(
             "<center><h1>500 {$message}</h1><hr>Accolon Route PHP</center>",
             500
@@ -90,13 +92,13 @@ class Router
         $route = null;
 
         if (!isset($this->routes[$method])) {
-            abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
+            ($this->notFound)();
         }
 
         $route = $this->routes[$method][$uri];
 
         if (!$route) {
-            abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
+            ($this->notFound)();
         }
 
         /** @var \Accolon\Route\Route $route */
