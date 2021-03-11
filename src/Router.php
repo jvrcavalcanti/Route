@@ -4,26 +4,27 @@ namespace Accolon\Route;
 
 use Accolon\Container\Container;
 use Accolon\Route\Exceptions\HttpException;
-use Accolon\Route\Exceptions\ValidateFailException;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
+use Accolon\Route\Traits\Prefix;
 use Accolon\Route\Traits\Routes;
+use Accolon\Route\Utils\StringStack;
 
 class Router
 {
-    use Routes, Methods, Middlewares;
+    use Routes, Methods, Middlewares, Prefix;
 
     protected bool $debug;
     protected \Closure $notFound;
     protected \Closure $fallback;
-    protected string $prefix = '';
     protected Container $container;
 
     public function __construct(?Container $container = null, bool $debug = true)
     {
         $this->initRoutes();
         $this->debug = $debug;
+        $this->prefix = new StringStack;
         $this->container = $container ? $container : new Container();
         $this->notFound = fn() => abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
         $this->fallback = fn($message) => response()->html(
@@ -33,24 +34,6 @@ class Router
         $this->startMiddlewareStack();
 
         $this->container->singletons(Container::class, $this->container);
-    }
-
-    public function prefix(string $prefix)
-    {
-        if ($prefix[0] != '/') {
-            $prefix = '/' . $prefix;
-        }
-
-        $this->prefix = $prefix;
-    }
-
-    public function addPrefix(string $prefix)
-    {
-        if ($prefix[0] != '/') {
-            $prefix = '/' . $prefix;
-        }
-        
-        $this->prefix .= $prefix;
     }
 
     public function redirect(string $url)

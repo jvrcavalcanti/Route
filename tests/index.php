@@ -1,7 +1,8 @@
 <?php
 
 use Accolon\Route\App;
-use Accolon\Route\Controller as RouteController;
+use Accolon\Route\Router;
+use Accolon\Route\Controller;
 use Accolon\Route\Middlewares\Cors;
 use Accolon\Route\Request;
 use Accolon\Route\Response;
@@ -22,7 +23,7 @@ class User
     //
 }
 
-class Controller extends RouteController
+class UserController extends Controller
 {
     private User $user;
 
@@ -41,12 +42,24 @@ class Controller extends RouteController
     }
 }
 
-$router = new App();
+$app = new App();
 
-$router->get('/', fn() => 'oi');
+$app->get('/', fn() => 'oi');
 
-$router->middleware(Cors::class);
+$app->middleware(Cors::class);
 
-$router->get('/user/{id}', [Controller::class, 'show']);
+$router = new Router();
 
-$router->dispatch();
+$router->pushPrefix('/api');
+
+$router->pushPrefix('/user');
+
+$router->popPrefix();
+
+$router->get('/{id}', [UserController::class, 'show']);
+
+$app->router($router);
+
+// dd($app->getRoutes());
+
+$app->dispatch();

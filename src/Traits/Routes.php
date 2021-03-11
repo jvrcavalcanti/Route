@@ -24,7 +24,7 @@ trait Routes
 
     public function addRoute(string $method, string $uri, $action): Route
     {
-        if ($uri === "/" && $this->prefix === '') {
+        if ($uri === "/" && $this->getPrefix() === '') {
             return $this->routes[$method]['\/'] = Route::create(
                 $method,
                 '/^\/$/',
@@ -43,7 +43,7 @@ trait Routes
         }
 
         $uri = preg_replace('~{([^}]*)}~', "([^/]+)", $uri);
-        $newUri = str_replace("/", "\/", $this->prefix . ($uri === '/' ? '' : $uri));
+        $newUri = str_replace("/", "\/", $this->getPrefix() . ($uri === '/' ? '' : $uri));
 
         return $this->routes[$method][$newUri . '(\/)?'] = Route::create(
             $method,

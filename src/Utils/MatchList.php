@@ -4,14 +4,25 @@ namespace Accolon\Route\Utils;
 
 class MatchList implements \ArrayAccess
 {
-    private array $list = [];
+    private array $list;
     private string $prefix;
     private string $suffix;
 
-    public function __construct(string $prefix = '/^', string $suffix = '$/')
+    public function __construct(array $list = [], string $prefix = '/^', string $suffix = '$/')
     {
         $this->prefix = $prefix;
         $this->suffix = $suffix;
+        $this->list = $list;
+    }
+
+    public function merge(array $list)
+    {
+        $this->list = array_merge($this->list, $list);
+    }
+
+    public function toArray()
+    {
+        return $this->list;
     }
 
     public function offsetExists($subject)
