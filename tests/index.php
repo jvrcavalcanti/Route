@@ -1,13 +1,26 @@
 <?php
 
 use Accolon\Route\App;
-use Accolon\Route\Router;
-use Accolon\Route\Controller;
 use Accolon\Route\Middlewares\Cors;
-use Accolon\Route\Request;
-use Accolon\Route\Response;
 
 require_once "../vendor/autoload.php";
+
+function load_files($path)
+{
+    $files = scandir($path);
+    $files = array_splice($files, 2);
+    $files = array_filter($files, fn($file) => str_ends_with($file, '.php'));
+
+    foreach ($files as $file) {
+        $tmpPath = $path . '/' . $file;
+        if (is_dir($tmpPath)) {
+            load_files($tmpPath);
+            continue;
+        }
+
+        require_once($tmpPath);
+    }
+}
 
 function dd($var)
 {
@@ -18,29 +31,8 @@ function dd($var)
     exit;
 }
 
-class User
-{
-    //
-}
-
-class UserController extends Controller
-{
-    private User $user;
-
-    public function __construct(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function show(Request $request)
-    {
-        $this->validate([
-            'id' => 'int'
-        ]);
-
-        return response()->text("id: {$request->get('id')}");
-    }
-}
+load_files('./Controllers');
+load_files('./Models');
 
 $app = new App();
 
@@ -48,17 +40,7 @@ $app->get('/', fn() => 'oi');
 
 $app->middleware(Cors::class);
 
-$router = new Router();
-
-$router->pushPrefix('/api');
-
-$router->pushPrefix('/user');
-
-$router->popPrefix();
-
-$router->get('/{id}', [UserController::class, 'show']);
-
-$app->router($router);
+$app->attributeRoutes('./Controllers', 'Tests\\Controllers');
 
 // dd($app->getRoutes());
 

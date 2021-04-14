@@ -2,26 +2,16 @@
 
 namespace Accolon\Route;
 
+use Accolon\Route\Enums\ContentType;
 use Accolon\Route\Headers;
 
 abstract class Response
 {
-    const TEXT = "text/plain";
-    const HTML = "text/html";
-    const JSON = "application/json";
-
-    const OK = 200;
-    const CREATED = 201;
-    const BAD_REQUEST = 400;
-    const UNAUTHORIZED = 401;
-    const NOT_FOUND = 404;
-    const ERROR = 500;
-
     public Headers $headers;
 
     protected $body;
     protected int $code = 200;
-    protected string $typeContent = "text/plain";
+    protected string $typeContent = ContentType::HTML;
     protected string $charset = "UTF-8";
     protected $status = [
         200 => "200 OK",

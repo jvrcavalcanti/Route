@@ -6,7 +6,7 @@
         "process-timeout": 0
     },
     "scripts": {
-        "serve": "php -S localhost:8000 -t tests"
+        "serve": "php8.0 -S localhost:8000 -t tests"
     },
     "authors": [
         {
@@ -22,10 +22,15 @@
             "./src/helper.php"
         ]
     },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "accolon/container": "^1.0"
     }
 }

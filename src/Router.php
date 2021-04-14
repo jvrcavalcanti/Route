@@ -3,7 +3,9 @@
 namespace Accolon\Route;
 
 use Accolon\Container\Container;
+use Accolon\Route\Attributes\Route;
 use Accolon\Route\Exceptions\HttpException;
+use Accolon\Route\Exceptions\ServerErrorException;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
@@ -67,6 +69,46 @@ class Router
         return $_SERVER['REQUEST_METHOD'];
     }
 
+    public function attributeRoutes(string $path, string $namespace = 'App\\Controllers')
+    {
+        $files = scandir($path);
+        $files = array_splice($files, 2);
+        $files = array_filter($files, fn($file) => str_ends_with($file, '.php'));
+
+        $classes = [];
+
+        foreach ($files as $file) {
+            $tmp = $path . '/' . $file;
+
+            if (is_dir($tmp)) {
+                $this->attributeRoutes($tmp, $namespace . '\\' . $file);
+                continue;
+            }
+
+            $classes[] = $namespace . '\\' . (explode('.', $file))[0];
+        }
+
+        foreach ($classes as $class) {
+            $reflectionClass = new \ReflectionClass($class);
+            $functions = $reflectionClass->getMethods();
+            $functions = array_filter($functions, fn($function) => $function->getName() !== '__construct');
+            
+            foreach ($functions as $function) {
+                $attributes = $function->getAttributes(Route::class);
+                if (empty($attributes)) {
+                    continue;
+                }
+
+                $attribute = ($attributes[0])->newInstance();
+
+                $method = $attribute->method;
+                $uri = $attribute->uri;
+
+                $this->{$method}($uri, [$class, $function->getName()]);
+            }
+        }
+    }
+
     public function __invoke(Request $request)
     {
         $uri = $this->getUrl();
@@ -106,7 +148,7 @@ class Router
             $response = $this->runMiddlewares(request());
         } catch (HttpException $e) {
             $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
+        } catch (ServerErrorException $e) {
             $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
         } finally {
             if ($response instanceof Response) {
