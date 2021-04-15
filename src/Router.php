@@ -5,7 +5,7 @@ namespace Accolon\Route;
 use Accolon\Container\Container;
 use Accolon\Route\Attributes\Route;
 use Accolon\Route\Exceptions\HttpException;
-use Accolon\Route\Exceptions\ServerErrorException;
+use Accolon\Route\Exceptions\InternalServerErrorException;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
@@ -148,7 +148,7 @@ class Router
             $response = $this->runMiddlewares(request());
         } catch (HttpException $e) {
             $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
-        } catch (ServerErrorException $e) {
+        } catch (InternalServerErrorException $e) {
             $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
         } finally {
             if ($response instanceof Response) {

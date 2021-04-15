@@ -2,8 +2,8 @@
 
 namespace Accolon\Route\Responses;
 
-use Accolon\Route\Response;
 use Accolon\Route\Enums\ContentType;
+use Accolon\Route\Response;
 
 class JsonResponse extends Response
 {

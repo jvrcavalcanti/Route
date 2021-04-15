@@ -22,7 +22,7 @@ class UserController extends Controller
         $this->validate([
             'id' => 'int'
         ]);
-
+        
         return response()->text("id: {$request->get('id')}");
     }
 }

@@ -2,9 +2,10 @@
 
 namespace Accolon\Route;
 
-use Accolon\Route\Responses\JsonResponse;
+use Accolon\Route\Response;
 use Accolon\Route\Responses\TextResponse;
 use Accolon\Route\Responses\HtmlResponse;
+use Accolon\Route\Responses\JsonResponse;
 
 class ResponseFactory
 {

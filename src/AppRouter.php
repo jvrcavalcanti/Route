@@ -6,7 +6,6 @@ class AppRouter extends Router
 {
     public function newRouter()
     {
-        dd($this->prefix);
         return new Router($this->container, $this->debug);
     }
 
