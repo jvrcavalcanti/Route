@@ -1,6 +1,6 @@
 <?php
 
-namespace Accolon\Route\Rule;
+namespace Accolon\Route\Rules;
 
 use Accolon\Route\Rule;
 
