@@ -30,6 +30,13 @@ if (!function_exists('abort')) {
     }
 }
 
+if (!function_exists('abort_when')) {
+    function abort_when(bool $check, $message, int $code = 400, string $typeContent = "html")
+    {
+        $check && abort($message, $code, $typeContent);
+    }
+}
+
 if (!function_exists('router')) {
     function router(): ?Router
     {

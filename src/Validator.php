@@ -3,7 +3,7 @@
 namespace Accolon\Route;
 
 use Accolon\Route\Exceptions\ValidateFailException;
-use Accolon\Route\Rule\StringRule;
+use Accolon\Route\Rules\StringRule;
 use Accolon\Route\Rules\IntegerRule;
 
 class Validator
@@ -30,15 +30,15 @@ class Validator
             $message = null;
 
             if (!$request->has($param)) {
-                $message = 'Not passed param';
+                $message = 'Not passed param: ';
             }
 
             if (!static::make($rule, $param, $request->get($param))) {
-                $message = 'Invalided param';
+                $message = 'Invalided param: ';
             }
 
             if ($message) {
-                self::$errors[$param] = $message;
+                self::$errors[] = $message . $param;
             }
         }
 
