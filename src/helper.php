@@ -30,17 +30,17 @@ if (!function_exists('abort')) {
     }
 }
 
-if (!function_exists('app')) {
-    function app(): ?Router
+if (!function_exists('router')) {
+    function router(): ?Router
     {
-        return $GLOBALS['app'] ?? $GLOBALS['router'] ?? null;
+        return $GLOBALS['router'] ?? null;
     }
 }
 
 if (!function_exists('container')) {
     function container(): Container
     {
-        $app = app();
+        $app = router();
 
         if (!$app) {
             return new Container;

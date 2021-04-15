@@ -2,7 +2,7 @@
 
 namespace Accolon\Route;
 
-class App extends Router
+class AppRouter extends Router
 {
     public function newRouter()
     {
