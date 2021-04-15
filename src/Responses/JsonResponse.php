@@ -10,6 +10,6 @@ class JsonResponse extends Response
     public function handle($body, int $code = 0, array $headers = [])
     {
         $this->setTypeContent(ContentType::JSON);
-        return $this->send(json_encode($body), $code, $headers);
+        return $this->send(is_string($body) ? $body : json_encode($body), $code, $headers);
     }
 }

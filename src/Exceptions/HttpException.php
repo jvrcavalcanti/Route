@@ -5,17 +5,23 @@ namespace Accolon\Route\Exceptions;
 class HttpException extends \Exception
 {
     protected string $contentType;
-    protected $message;
 
-    public function __construct(int $code, $message, string $contentType = "html")
+    public function __construct(int $code, mixed $message, string $contentType = "html")
     {
-        parent::__construct('', $code);
-        $this->message = $message;
+        parent::__construct($this->typeToString($contentType, $message), $code);
         $this->contentType = $contentType;
     }
 
     public function getContentType(): string
     {
         return $this->contentType;
+    }
+
+    protected function typeToString(string $type, mixed $data)
+    {
+        return match($type) {
+            'html', 'text' => (string) $data,
+            'json' => json_encode($data)
+        };
     }
 }
