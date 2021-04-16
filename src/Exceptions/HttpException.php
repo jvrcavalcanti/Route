@@ -6,7 +6,7 @@ class HttpException extends \Exception
 {
     protected string $contentType;
 
-    public function __construct(int $code, mixed $message, string $contentType = "html")
+    public function __construct($message, int $code, string $contentType = "html")
     {
         parent::__construct($this->typeToString($contentType, $message), $code);
         $this->contentType = $contentType;

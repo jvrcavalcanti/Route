@@ -3,16 +3,15 @@
 use Accolon\Container\Container;
 use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Request;
+use Accolon\Route\Response;
 use Accolon\Route\ResponseFactory;
 use Accolon\Route\Router;
 
 if (!function_exists('response')) {
-    function response(...$params)
+    function response(...$params): ResponseFactory|Response
     {
-        if (!empty($params)) {
-            return (new ResponseFactory)->text(...$params);
-        }
-        return new ResponseFactory();
+        $resp = new ResponseFactory();
+        return !empty($params) ? $resp->text(...$params) : $resp;
     }
 }
 
@@ -26,7 +25,7 @@ if (!function_exists('request')) {
 if (!function_exists('abort')) {
     function abort($message, int $code = 400, string $typeContent = "html")
     {
-        throw new HttpException($code, $message, $typeContent);
+        throw new HttpException($message, $code, $typeContent);
     }
 }
 

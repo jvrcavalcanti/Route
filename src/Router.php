@@ -5,7 +5,8 @@ namespace Accolon\Route;
 use Accolon\Container\Container;
 use Accolon\Route\Attributes\Route;
 use Accolon\Route\Exceptions\HttpException;
-use Accolon\Route\Exceptions\ServerErrorException;
+use Accolon\Route\Exceptions\InternalServerErrorException;
+use Accolon\Route\Exceptions\NotFoundException;
 use Accolon\Route\Request;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
@@ -28,7 +29,10 @@ class Router
         $this->debug = $debug;
         $this->prefix = new StringStack;
         $this->container = $container ? $container : new Container();
-        $this->notFound = fn() => abort("<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>", 404);
+        $this->notFound = fn() => abort(
+            "<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>",
+            404
+        );
         $this->fallback = fn($message) => response()->html(
             "<center><h1>500 {$message}</h1><hr>Accolon Route PHP</center>",
             500
@@ -146,9 +150,11 @@ class Router
     {
         try {
             $response = $this->runMiddlewares(request());
+        } catch (NotFoundException $e) {
+            $response = ($this->notFound)();
         } catch (HttpException $e) {
             $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
-        } catch (ServerErrorException $e) {
+        } catch (InternalServerErrorException $e) {
             $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
         } finally {
             if ($response instanceof Response) {
