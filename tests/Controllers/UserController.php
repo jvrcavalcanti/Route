@@ -20,9 +20,9 @@ class UserController extends Controller
     #[Route('/user/{id}')]
     public function show(Request $request)
     {
-        throw new HttpException(500, ['data' => 'kkk'], 'json');
         $this->validate([
-            'id' => 'int'
+            'id' => 'int',
+            'user' => 'string'
         ]);
         
         return response()->text("id: {$request->get('id')}");

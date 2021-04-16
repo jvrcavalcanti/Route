@@ -4,6 +4,7 @@ namespace Accolon\Route;
 
 use Accolon\Container\Container;
 use Accolon\Route\Attributes\Route;
+use Accolon\Route\Exceptions\BadRequestException;
 use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Exceptions\InternalServerErrorException;
 use Accolon\Route\Exceptions\NotFoundException;
@@ -150,12 +151,12 @@ class Router
     {
         try {
             $response = $this->runMiddlewares(request());
-        } catch (NotFoundException $e) {
-            $response = ($this->notFound)();
-        } catch (HttpException $e) {
-            $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
+        } catch (BadRequestException $e) {
+            $response = response()->{$e->getContentType()}($e->getMessage() ?? 'Bad Request', $e->getCode());
         } catch (InternalServerErrorException $e) {
             $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
+        } catch (HttpException $e) {
+            $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
         } finally {
             if ($response instanceof Response) {
                 echo $response->run();
