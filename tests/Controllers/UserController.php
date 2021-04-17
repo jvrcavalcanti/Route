@@ -3,8 +3,8 @@
 namespace Tests\Controllers;
 
 use Accolon\Route\Attributes\Route;
+use Accolon\Route\Enums\Method;
 use Accolon\Route\Controller;
-use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Request;
 use Tests\Models\User;
 
@@ -17,12 +17,12 @@ class UserController extends Controller
         $this->user = $user;
     }
 
-    #[Route('/user/{id}')]
+    #[Route('/user/{id}', Method::POST)]
     public function show(Request $request)
     {
         $this->validate([
             'id' => 'int',
-            'user' => 'string'
+            'price' => 'float'
         ]);
         
         return response()->text("id: {$request->get('id')}");

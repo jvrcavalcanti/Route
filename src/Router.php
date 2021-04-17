@@ -109,7 +109,8 @@ class Router
                 $method = $attribute->method;
                 $uri = $attribute->uri;
 
-                $this->{$method}($uri, [$class, $function->getName()]);
+                $route = $this->{$method}($uri, [$class, $function->getName()]);
+                $route->middleware($attribute->middlewares);
             }
         }
     }

@@ -9,7 +9,8 @@ class Route
 {
     public function __construct(
         public string $uri,
-        public string $method = Method::GET
+        public string $method = Method::GET,
+        public array $middlewares = []
     ) {
         //
     }
