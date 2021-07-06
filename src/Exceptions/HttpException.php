@@ -2,7 +2,7 @@
 
 namespace Accolon\Route\Exceptions;
 
-class HttpException extends \Exception
+class HttpException extends AccolonRouteException
 {
     protected string $contentType;
 

@@ -4,9 +4,12 @@ namespace Accolon\Route;
 
 use Accolon\Route\Enums\ContentType;
 use Accolon\Route\Headers;
+use Accolon\Route\Traits\Cookie;
 
 abstract class Response
 {
+    use Cookie;
+
     public Headers $headers;
 
     protected $body;

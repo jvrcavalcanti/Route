@@ -8,10 +8,9 @@ use Accolon\Route\ResponseFactory;
 use Accolon\Route\Router;
 
 if (!function_exists('response')) {
-    function response(...$params): ResponseFactory|Response
+    function response(...$params): ResponseFactory
     {
-        $resp = new ResponseFactory();
-        return !empty($params) ? $resp->text(...$params) : $resp;
+        return new ResponseFactory;
     }
 }
 

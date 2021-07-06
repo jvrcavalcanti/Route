@@ -9,28 +9,26 @@ use Accolon\Route\Responses\JsonResponse;
 
 class ResponseFactory
 {
-    private Response $response;
-
-    public function text($body, int $code = 0, array $headers = [])
+    public function __call(string $name, array $arguments)
     {
-        $this->response = new TextResponse();
-        return $this->run($body, $code, $headers);
+        if (!array_key_exists($name, $this->types())) {
+            throw new \Exception('Invalid response type');
+        }
+        return $this->create($name, ...$arguments);
     }
 
-    public function json($body, int $code = 0, array $headers = [])
+    protected function types(): array
     {
-        $this->response = new JsonResponse();
-        return $this->run($body, $code, $headers);
+        return [
+            'text' => TextResponse::class,
+            'json' => JsonResponse::class,
+            'html' => HtmlResponse::class,
+        ];
     }
 
-    public function html($body, int $code = 0, array $headers = [])
+    public function create(string $type, mixed $body, int $code = 0, array $headers = [])
     {
-        $this->response = new HtmlResponse();
-        return $this->run($body, $code, $headers);
-    }
-
-    public function run($body = null, int $code = 0, array $headers = [])
-    {
-        return $this->response->handle($body, $code, $headers);
+        $class = $this->types()[$type];
+        return (new $class())->handle($body, $code, $headers);
     }
 }

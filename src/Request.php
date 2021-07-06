@@ -4,11 +4,12 @@ namespace Accolon\Route;
 
 use Accolon\Route\Files\File;
 use Accolon\Route\Headers;
+use Accolon\Route\Traits\Cookie;
 use Accolon\Route\Traits\Files;
 
 class Request
 {
-    use Files;
+    use Files, Cookie;
 
     private array $data = [];
     private array $cookie = [];
@@ -22,33 +23,19 @@ class Request
         }
 
         $this->initBody();
-        $this->initHeaders();
-        $this->cookie = &$_COOKIE;
+        $this->headers = new Headers();
         $this->files = $this->convertFilesArrayToObject($this->parseFiles($_FILES));
     }
     
     protected function initBody()
     {
-        json_decode($this->getBody());
+        json_decode($this->body());
 
         if (json_last_error() === JSON_ERROR_NONE) {
-            foreach (json_decode($this->getBody()) as $key => $value) {
+            foreach (json_decode($this->body()) as $key => $value) {
                 $this->data[$key] = htmlentities($value);
             }
         }
-    }
-
-    protected function initHeaders()
-    {
-        $headers = [];
-        foreach ($_SERVER as $key => $value) {
-            if (substr($key, 0, 5) <> 'HTTP_') {
-                continue;
-            }
-            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
-            $headers[$header] = $value;
-        }
-        $this->headers = new Headers($headers);
     }
 
     public function __get($name)
@@ -85,17 +72,17 @@ class Request
         header("Location: {$url}");
     }
 
-    public function getContentType(): string
+    public function contentType(): string
     {
-        return explode(',', $_SERVER['HTTP_ACCEPT'])[0];
+        return $this->headers->get('Content-Type');
     }
 
-    public function getFiles()
+    public function files(): array
     {
         return $this->files;
     }
 
-    public function getFile(string $name): File
+    public function file(string $name): File
     {
         if (!isset($this->files[$name])) {
             throw new \OutOfBoundsException("File with name [{$name}] not exists");
@@ -114,25 +101,19 @@ class Request
         return $method === $this->method();
     }
 
-    public function getAuthorization()
+    public function authorization(): ?string
     {
         return $this->headers->get('Authorization') ?? null;
     }
 
-    public function getUri()
+    public function uri(): string
     {
         $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));
         return $uri == "" ? "/" : $uri;
     }
 
-    public function getCookie(string $name): ?string
+    public function body(): string|façse
     {
-        $this->cookie = $_COOKIE;
-        return unserialize(base64_decode($this->cookie[$name])) ?? null;
-    }
-
-    public function getBody()
-    {
-        return file_get_contents('php://input') ?? null;
+        return file_get_contents('php://input');
     }
 }
