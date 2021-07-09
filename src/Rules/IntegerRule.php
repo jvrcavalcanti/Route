@@ -2,9 +2,7 @@
 
 namespace Accolon\Route\Rules;
 
-use Accolon\Route\Rule;
-
-class IntegerRule extends Rule
+class IntegerRule implements RuleInterface
 {
     public function check($name, $value): bool
     {

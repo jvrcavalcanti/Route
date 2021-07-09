@@ -3,8 +3,7 @@
 use Accolon\Container\Container;
 use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Request;
-use Accolon\Route\Response;
-use Accolon\Route\ResponseFactory;
+use Accolon\Route\Responses\ResponseFactory;
 use Accolon\Route\Router;
 
 if (!function_exists('response')) {

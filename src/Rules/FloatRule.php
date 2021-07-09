@@ -2,9 +2,7 @@
 
 namespace Accolon\Route\Rules;
 
-use Accolon\Route\Rule;
-
-class FloatRule extends Rule
+class FloatRule implements RuleInterface
 {
     public function check($name, $value): bool
     {

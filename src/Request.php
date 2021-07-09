@@ -23,7 +23,7 @@ class Request
         }
 
         $this->initBody();
-        $this->headers = new Headers();
+        $this->initHeaders();
         $this->files = $this->convertFilesArrayToObject($this->parseFiles($_FILES));
     }
     
@@ -36,6 +36,20 @@ class Request
                 $this->data[$key] = htmlentities($value);
             }
         }
+    }
+
+    protected function initHeaders()
+    {
+        $headers = [];
+        foreach ($_SERVER as $key => $value) {
+            if (!str_starts_with($key, 'HTTP_')) {
+                continue;
+            }
+            
+            $header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+            $headers[$header] = $value;
+        }
+        $this->headers = new Headers($headers);
     }
 
     public function __get($name)
@@ -112,7 +126,7 @@ class Request
         return $uri == "" ? "/" : $uri;
     }
 
-    public function body(): string|façse
+    public function body(): string|false
     {
         return file_get_contents('php://input');
     }

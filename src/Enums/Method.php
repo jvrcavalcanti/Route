@@ -10,4 +10,5 @@ abstract class Method
     const PATCH = 'PATCH';
     const DELETE = 'DELETE';
     const OPTIONS = 'OPTIONS';
+    const HEAD = 'HEAD';
 }

@@ -6,6 +6,7 @@ use Accolon\Route\Exceptions\ValidateFailException;
 use Accolon\Route\Rules\FloatRule;
 use Accolon\Route\Rules\StringRule;
 use Accolon\Route\Rules\IntegerRule;
+use Accolon\Route\Rules\RuleInterface;
 
 class Validator
 {
@@ -20,9 +21,9 @@ class Validator
         'invalids' => []
     ];
 
-    public static function resolveRule($rule): Rule
+    public static function resolveRule($rule): RuleInterface
     {
-        return $rule instanceof Rule ? $rule : resolve(static::VALIDATORS[$rule]);
+        return $rule instanceof RuleInterface ? $rule : resolve(static::VALIDATORS[$rule]);
     }
 
     public static function request(Request $request, array $rules)

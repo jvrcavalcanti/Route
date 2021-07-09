@@ -9,6 +9,7 @@ use Accolon\Route\Exceptions\HttpException;
 use Accolon\Route\Exceptions\InternalServerErrorException;
 use Accolon\Route\Exceptions\NotFoundException;
 use Accolon\Route\Request;
+use Accolon\Route\Responses\Response;
 use Accolon\Route\Traits\Methods;
 use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\Prefix;
@@ -28,7 +29,7 @@ class Router
     {
         $this->initRoutes();
         $this->debug = $debug;
-        $this->prefix = new StringStack;
+        $this->initPrefix();
         $this->container = $container ? $container : new Container();
         $this->notFound = fn() => abort(
             "<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>",
@@ -159,8 +160,9 @@ class Router
         } catch (HttpException $e) {
             $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
         } finally {
+            // dd($response->getBody());
             if ($response instanceof Response) {
-                echo $response->run();
+                echo $response->body();
             }
     
             if (!is_array($response) && !is_object($response)) {

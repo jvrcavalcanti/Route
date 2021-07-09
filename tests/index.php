@@ -1,6 +1,6 @@
 <?php
 
-use Accolon\Route\AppRouter;
+use Accolon\Route\Router;
 use Accolon\Route\Middlewares\Cors;
 
 require_once "../vendor/autoload.php";
@@ -34,9 +34,9 @@ function dd($var)
 load_files('./Controllers');
 load_files('./Models');
 
-$app = new AppRouter();
+$app = new Router();
 
-$app->get('/', fn() => 'oi');
+$app->get('/', fn() => response()->text('oi', 200, ['Foo' => 'bar']));
 
 $app->middleware(Cors::class);
 

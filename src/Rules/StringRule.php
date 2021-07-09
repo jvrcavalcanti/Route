@@ -2,9 +2,7 @@
 
 namespace Accolon\Route\Rules;
 
-use Accolon\Route\Rule;
-
-class StringRule extends Rule
+class StringRule implements RuleInterface
 {
     public function check($name, $value): bool
     {

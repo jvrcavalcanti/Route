@@ -4,7 +4,7 @@ namespace Accolon\Route;
 
 use Accolon\Route\Request;
 
-interface IMiddleware
+interface MiddlewareInterface
 {
     public function handle(Request $request, $next);
 }

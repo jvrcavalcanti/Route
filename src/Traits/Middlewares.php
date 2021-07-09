@@ -2,7 +2,7 @@
 
 namespace Accolon\Route\Traits;
 
-use Accolon\Route\IMiddleware;
+use Accolon\Route\MiddlewareInterface;
 use Accolon\Route\Request;
 use Accolon\Route\Router;
 use Closure;
@@ -21,10 +21,10 @@ trait Middlewares
 
         foreach ($middlewares as $middleware) {
             if (is_string($middleware)) {
-                $middleware = $this->container->make($middleware);
+                $middleware = resolve($middleware);
             }
     
-            if ($middleware instanceof IMiddleware) {
+            if ($middleware instanceof MiddlewareInterface) {
                 $middleware = Closure::fromCallable([$middleware, 'handle']);
             }
     
