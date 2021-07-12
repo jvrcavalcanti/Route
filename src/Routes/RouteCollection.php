@@ -96,24 +96,11 @@ class RouteCollection implements RouteCollectionInterface
 
         $pointer = &$this->getPointer($method, $uri);
 
-        preg_match_all("~\{\s* ([a-zA-Z_][a-zA-Z0-9_-]*) \}~x", $uri, $keys, PREG_SET_ORDER);
-
-        $newKeys = [];
-
-        foreach ($keys as $key) {
-            unset($key[0]);
-            $newKeys[] = $key[1];
-        }
-
-        $uri = preg_replace('~{([^}]*)}~', "([^/]+)", $uri);
-        $newUri = str_replace("/", "\/", $this->getPrefix() . ($uri === '/' ? '' : $uri));
-
         $pointer = Route::create(
             $method,
-            '/^' . $newUri . "(\/)?$/",
+            $uri,
             $action,
-            $this->container,
-            $newKeys
+            $this->container
         );
 
         return $pointer;

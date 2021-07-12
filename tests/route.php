@@ -14,7 +14,7 @@ function dd($var)
 }
 
 $route = new RouteCollection();
-$route->get('/', fn() => 42);
+dd($route->get('/user/{user:uuid}/post/{a:number}', fn() => 42));
 $route->group(prefix: 'api', callback: function (RouteCollection $router) {
     $router->post('/', fn() => 42);
 });
