@@ -1,5 +1,6 @@
 <?php
 
+use Accolon\Route\Dispatcher;
 use Accolon\Route\Routes\RouteCollection;
 
 require './vendor/autoload.php';
@@ -14,8 +15,12 @@ function dd($var)
 }
 
 $route = new RouteCollection();
-dd($route->get('/user/{user:uuid}/post/{a:number}', fn() => 42));
+$route->get('/', fn() => '/');
+$route->get('/user/{id:number}', fn() => '/user/{id:number}');
 $route->group(prefix: 'api', callback: function (RouteCollection $router) {
-    $router->post('/', fn() => 42);
+    $router->post('/', fn() => '/api/');
 });
-dd($route->getRoutes());
+// dd($route);
+$_SERVER['REQUEST_URI'] = '/';
+$_SERVER['REQUEST_METHOD'] = 'GET';
+var_dump((new Dispatcher($route))->dispatch(request()));

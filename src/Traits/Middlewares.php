@@ -4,6 +4,7 @@ namespace Accolon\Route\Traits;
 
 use Accolon\Route\MiddlewareInterface;
 use Accolon\Route\Request;
+use Accolon\Route\Responses\Response;
 use Accolon\Route\Router;
 use Closure;
 
@@ -47,9 +48,15 @@ trait Middlewares
         $this->stack[] = $this;
     }
 
-    public function runMiddlewares(Request $request)
+    public function runMiddlewares(Request $request): Response
     {
         $start = $this->stack->top();
-        return $start($request);
+        $response = $start($request);
+        if (!$response instanceof Response) {
+            return is_array($response) || is_object($response)
+            ? response()->json($response)
+            : response()->text($response);
+        }
+        return $response;
     }
 }

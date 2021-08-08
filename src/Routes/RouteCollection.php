@@ -4,16 +4,18 @@ namespace Accolon\Route\Routes;
 
 use Accolon\Container\Container;
 use Accolon\Route\Enums\Method;
+use Accolon\Route\Exceptions\NotFoundException;
 use Accolon\Route\Route;
 use Accolon\Route\Traits\Middlewares;
 use Accolon\Route\Traits\Prefix;
+use Accolon\Route\Utils\MatchList;
 use Psr\Container\ContainerInterface;
 
 class RouteCollection implements RouteCollectionInterface
 {
     use Middlewares;
 
-    private array $routes = [];
+    private array $routes;
     private ContainerInterface $container;
 
     public function __construct(
@@ -28,13 +30,13 @@ class RouteCollection implements RouteCollectionInterface
     protected function initRoutes()
     {
         $this->routes = [
-            Method::GET => [],
-            Method::POST => [],
-            Method::PUT => [],
-            Method::PATCH => [],
-            Method::DELETE => [],
-            Method::OPTIONS => [],
-            Method::HEAD => []
+            Method::GET => new MatchList(),
+            Method::POST => new MatchList(),
+            Method::PUT => new MatchList(),
+            Method::PATCH => new MatchList(),
+            Method::DELETE => new MatchList(),
+            Method::OPTIONS => new MatchList(),
+            Method::HEAD => new MatchList()
         ];
     }
 
@@ -53,57 +55,44 @@ class RouteCollection implements RouteCollectionInterface
         return $this->prefix;
     }
 
-    protected function splitUri(string $uri): array
+    public function findRoute(string $method, string $uri): Route
     {
-        $uris = explode('/', $uri);
-        if ($uris[0] === '') {
-            $uris = array_splice($uris, 1);
-        }
-        $uris = array_filter($uris, fn($uri) => $uri !== '/');
-        $uris = array_map(fn($uri) => $uri === '' ? '\/' : $uri, $uris);
-        $uris = array_map(fn($uri) => preg_replace('#\{[a-z]{1,}\}#', '.*', $uri), $uris);
-        return $uris;
-    }
-
-    private function &getPointer(string $method, string $uri)
-    {
-        $uris = $this->splitUri($uri);
-        $pointer = &$this->routes[$method];
-
-        foreach ($uris as $key => $uri) {
-            if (!isset($pointer[$uri]) && $key < count($uris) - 1) {
-                $pointer[$uri] = [];
+        foreach ($this->routes[$method] as $route) {
+            if (preg_match($route->uri, $uri)) {
+                return $route;
             }
-
-            $pointer = &$pointer[$uri];
         }
 
-        return $pointer;
+        throw new NotFoundException('Not found');
     }
 
     private function addRoute(string $method, string $uri, \Closure|string|callable $action): Route
     {
-        if ($uri === '/' && $this->getPrefix() === '') {
-            return $this->routes[$method]['\/'] = Route::create(
+        if ($uri === '/' && $this->prefix === '') {
+            $this->routes[$method]['\/'] = Route::create(
                 $method,
-                '/^\/$/',
+                '/',
                 $action,
                 $this->container
             );
         }
 
-        $uri = $this->prefix . (str_contains($uri, '/') ? $uri : '/' . $uri);
+        if ($uri === '/' && $this->prefix !== '') {
+            $uri = $this->prefix;
+        }
 
-        $pointer = &$this->getPointer($method, $uri);
+        if ($uri !== '/' && $this->prefix !== '') {
+            $uri = $this->prefix . (str_contains($uri, '/') ? $uri : '/' . $uri);
+        }
 
-        $pointer = Route::create(
+        $uri = preg_replace('#{.*}#', '.', $uri);
+
+        return $this->routes[$method][$uri] = Route::create(
             $method,
             $uri,
             $action,
             $this->container
         );
-
-        return $pointer;
     }
 
     public function getRoutes(): array
@@ -114,7 +103,7 @@ class RouteCollection implements RouteCollectionInterface
     public function merge(RouteCollection $routeCollection): void
     {
         foreach ($routeCollection->getRoutes() as $method => $routes) {
-            $this->routes[$method] = array_merge($routes, $this->routes[$method]);
+            $this->routes[$method] = array_merge($routes->toArray(), $this->routes[$method]->toArray());
         }
     }
 
@@ -159,7 +148,8 @@ class RouteCollection implements RouteCollectionInterface
             throw new \RuntimeException('\$callback is not must be null');
         }
 
-        $collection = new RouteCollection($prefix, $middlewares, $this->container);
+        $collection = new RouteCollection('', $middlewares, $this->container);
+        $collection->prefix($prefix);
 
         $callback($collection);
 

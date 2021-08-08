@@ -36,10 +36,11 @@ class Route
     public function setUri(string $uri)
     {
         if ($uri === '/') {
-            $this->uri = '/^\/$/';
+            $this->uri = '#^\/$#';
+            return;
         }
 
-        $uri = '/^' . str_replace("/", "\/", $uri) . '(\/)?$/';
+        $uri = '#^' . str_replace("/", "\/", $uri) . '(\/)?$#';
 
         $this->uri = $uri;
     }
