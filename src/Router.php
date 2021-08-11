@@ -3,171 +3,67 @@
 namespace Accolon\Route;
 
 use Accolon\Container\Container;
-use Accolon\Route\Attributes\Route;
-use Accolon\Route\Exceptions\BadRequestException;
-use Accolon\Route\Exceptions\HttpException;
-use Accolon\Route\Exceptions\InternalServerErrorException;
-use Accolon\Route\Exceptions\NotFoundException;
-use Accolon\Route\Request;
-use Accolon\Route\Responses\Response;
-use Accolon\Route\Traits\Methods;
-use Accolon\Route\Traits\Middlewares;
-use Accolon\Route\Traits\Prefix;
-use Accolon\Route\Traits\Routes;
-use Accolon\Route\Utils\StringStack;
+use Accolon\Route\Routes\RouteCollection;
+use Accolon\Route\Routes\RouteCollectionInterface;
 
-class Router
+class Router implements RouteCollectionInterface
 {
-    use Routes, Methods, Middlewares, Prefix;
+    private Container $container;
+    private Dispatcher $dispatcher;
+    private RouteCollection $collection;
 
-    protected bool $debug;
-    protected \Closure $notFound;
-    protected \Closure $fallback;
-    protected Container $container;
-
-    public function __construct(?Container $container = null, bool $debug = true)
+    public function __construct(?Container $container = null)
     {
-        $this->initRoutes();
-        $this->debug = $debug;
-        $this->initPrefix();
-        $this->container = $container ? $container : new Container();
-        $this->notFound = fn() => abort(
-            "<center><h1>404 Not Found</h1><hr>Accolon Route PHP</center>",
-            404
-        );
-        $this->fallback = fn($message) => response()->html(
-            "<center><h1>500 {$message}</h1><hr>Accolon Route PHP</center>",
-            500
-        );
-        $this->startMiddlewareStack();
-
-        $this->container->singletons(Container::class, $this->container);
+        
+        $this->collection = new RouteCollection();
+        $this->dispatcher = new Dispatcher($this->collection);
+        $this->container = $container ?? container();
     }
 
-    public function redirect(string $url)
+    public function get(string $uri, \Closure|string|callable $action): Route
     {
-        header("Location: {$url}");
+        return $this->collection->get($uri, $action);
     }
 
-    public function getContainer()
+    public function post(string $uri, \Closure|string|callable $action): Route
     {
-        return $this->container;
+        return $this->collection->post($uri, $action);
     }
 
-    public function registerMiddlewares(array $middlewares)
+    public function put(string $uri, \Closure|string|callable $action): Route
     {
-        foreach ($middlewares as $name => $middleware) {
-            $this->container->bind($name, $middleware);
-        }
+        return $this->collection->put($uri, $action);
     }
 
-    public function getUrl(): string
+    public function patch(string $uri, \Closure|string|callable $action): Route
     {
-        $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));
-        if (strpos($uri, "/public") !== false) {
-            $uri = explode("/public", $uri)[1];
-        }
-        return $uri === "" ? "/" : $uri;
+        return $this->collection->patch($uri, $action);
     }
 
-    public function getMethod(): string
+    public function delete(string $uri, \Closure|string|callable $action): Route
     {
-        return $_SERVER['REQUEST_METHOD'];
+        return $this->collection->delete($uri, $action);
     }
 
-    public function attributeRoutes(string $path, string $namespace = 'App\\Controllers')
+    public function options(string $uri, \Closure|string|callable $action): Route
     {
-        $files = scandir($path);
-        $files = array_splice($files, 2);
-        $files = array_filter($files, fn($file) => str_ends_with($file, '.php'));
-
-        $classes = [];
-
-        foreach ($files as $file) {
-            $tmp = $path . '/' . $file;
-
-            if (is_dir($tmp)) {
-                $this->attributeRoutes($tmp, $namespace . '\\' . $file);
-                continue;
-            }
-
-            $classes[] = $namespace . '\\' . (explode('.', $file))[0];
-        }
-
-        foreach ($classes as $class) {
-            $reflectionClass = new \ReflectionClass($class);
-            $functions = $reflectionClass->getMethods();
-            $functions = array_filter($functions, fn($function) => $function->getName() !== '__construct');
-            
-            foreach ($functions as $function) {
-                $attributes = $function->getAttributes(Route::class);
-                if (empty($attributes)) {
-                    continue;
-                }
-
-                $attribute = ($attributes[0])->newInstance();
-
-                $method = $attribute->method;
-                $uri = $attribute->uri;
-
-                $route = $this->{$method}($uri, [$class, $function->getName()]);
-                $route->middleware($attribute->middlewares);
-            }
-        }
+        return $this->collection->options($uri, $action);
     }
 
-    public function __invoke(Request $request)
+    public function head(string $uri, \Closure|string|callable $action): Route
     {
-        $uri = $this->getUrl();
-        $method = $this->getMethod();
+        return $this->collection->head($uri, $action);
+    }
 
-        $route = null;
-
-        if (!isset($this->routes[$method])) {
-            ($this->notFound)();
-        }
-
-        $route = $this->routes[$method][$uri];
-
-        if (!$route) {
-            ($this->notFound)();
-        }
-
-        /** @var \Accolon\Route\Route $route */
-
-        preg_match_all($route->uri, $uri, $keys, PREG_SET_ORDER);
-
-        unset($keys[0][0]);
-        $keys = $keys[0];
-
-        $cont = 0;
-        foreach ($keys as $key) {
-            $_REQUEST[$route->getKey($cont)] = $key;
-            $cont ++;
-        }
-
-        return $route->run($request);
+    public function group(string $prefix = '', array $middlewares = [], ?\Closure $callback = null): void
+    {
+        $this->collection->group(prefix: $prefix, middlewares: $middlewares, callback: $callback);
     }
 
     public function dispatch()
     {
-        try {
-            $response = $this->runMiddlewares(request());
-        } catch (BadRequestException $e) {
-            $response = response()->{$e->getContentType()}($e->getMessage() ?? 'Bad Request', $e->getCode());
-        } catch (InternalServerErrorException $e) {
-            $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
-        } catch (HttpException $e) {
-            $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
-        } finally {
-            // dd($response->getBody());
-            if ($response instanceof Response) {
-                echo $response->body();
-            }
-    
-            if (!is_array($response) && !is_object($response)) {
-                echo $response;
-            }
-        }
+        $request = $this->container->make(Request::class);
+        $response = $this->dispatcher->dispatch($request);
+        dd($response);
     }
 }

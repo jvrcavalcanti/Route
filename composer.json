@@ -31,6 +31,6 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.0",
-        "accolon/container": "^1.0"
+        "accolon/container": "^2.0"
     }
 }

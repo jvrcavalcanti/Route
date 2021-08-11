@@ -37,26 +37,6 @@ if (!function_exists('abort_when')) {
 if (!function_exists('router')) {
     function router(): ?Router
     {
-        return $GLOBALS['router'] ?? null;
-    }
-}
-
-if (!function_exists('container')) {
-    function container(): Container
-    {
-        $app = router();
-
-        if (!$app) {
-            return new Container;
-        }
-
-        return $app->getContainer();
-    }
-}
-
-if (!function_exists('resolve')) {
-    function resolve($id)
-    {
-        return container()->make($id);
+        return $GLOBALS['app'] ?? $GLOBALS['router'] ?? null;
     }
 }

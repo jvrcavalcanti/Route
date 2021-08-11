@@ -13,5 +13,5 @@ interface RouteCollectionInterface
     public function delete(string $uri, \Closure|string|callable $action): Route;
     public function options(string $uri, \Closure|string|callable $action): Route;
     public function head(string $uri, \Closure|string|callable $action): Route;
-    public function group(string $prefix = '', array $middlewares = []);
+    public function group(string $prefix = '', array $middlewares = [], ?\Closure $callback = null): void;
 }

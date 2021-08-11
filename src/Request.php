@@ -123,7 +123,16 @@ class Request
     public function uri(): string
     {
         $uri = urldecode(parse_url($_GET['path'] ?? $_SERVER['REQUEST_URI'], PHP_URL_PATH));
-        return $uri == "" ? "/" : $uri;
+
+        if ($uri === '') {
+            $uri = '/';
+        }
+
+        if (!str_ends_with($uri, '/')) {
+            $uri .= '/';
+        }
+        
+        return $uri;
     }
 
     public function body(): string|false

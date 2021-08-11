@@ -79,9 +79,7 @@ class RouteCollection implements RouteCollectionInterface
 
         if ($uri === '/' && $this->prefix !== '') {
             $uri = $this->prefix;
-        }
-
-        if ($uri !== '/' && $this->prefix !== '') {
+        } elseif ($uri !== '/' && $this->prefix !== '') {
             $uri = $this->prefix . (str_contains($uri, '/') ? $uri : '/' . $uri);
         }
 
@@ -142,7 +140,7 @@ class RouteCollection implements RouteCollectionInterface
         return $this->addRoute(Method::HEAD, $uri, $action);
     }
 
-    public function group(string $prefix = '', array $middlewares = [], ?\Closure $callback = null)
+    public function group(string $prefix = '', array $middlewares = [], ?\Closure $callback = null): void
     {
         if (is_null($callback)) {
             throw new \RuntimeException('\$callback is not must be null');
