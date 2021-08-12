@@ -56,7 +56,7 @@ abstract class Response
         return $this->body;
     }
 
-    public function body()
+    public function body(): string
     {
         foreach ($this->headers->data() as $header => $value) {
             header("{$header}: {$value}");

@@ -83,7 +83,7 @@ class RouteCollection implements RouteCollectionInterface
             $uri = $this->prefix . (str_contains($uri, '/') ? $uri : '/' . $uri);
         }
 
-        $uri = preg_replace('#{.*}#', '.', $uri);
+        // $uri = preg_replace('#{.*}#', '(.)', $uri);
 
         return $this->routes[$method][$uri] = Route::create(
             $method,
@@ -91,6 +91,8 @@ class RouteCollection implements RouteCollectionInterface
             $action,
             $this->container
         );
+
+        return $route;
     }
 
     public function getRoutes(): array

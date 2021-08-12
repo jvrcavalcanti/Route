@@ -15,6 +15,7 @@ class Route
     private array $keys = [];
 
     protected array $patternMatchers = [
+        'any'           => '(.+)',
         "number"        => '([0-9]+)',
         "word"          => '([a-zA-Z]+)',
         "alph_dash"     => '([a-zA-Z0-9-_]+)',
@@ -40,7 +41,21 @@ class Route
             return;
         }
 
-        $uri = '#^' . str_replace("/", "\/", $uri) . '(\/)?$#';
+        preg_match_all('#\{(([a-zA-Z_]*)(\:([\w\d]*))?)\}#x', $uri, $keys, PREG_SET_ORDER);
+
+        foreach ($keys as $key) {
+            $type = 'any';
+            if (str_contains($key[0], ':')) {
+                $type = explode(':', $key[0])[1];
+                $type = str_split($type, strlen($type) - 1)[0];
+            }
+
+            $replacement = $this->patternMatchers[$type];
+
+            $uri = preg_replace("#{$key[0]}#", $replacement, $uri);
+        }
+
+        $uri = '#^' . str_replace("/", "\/", $uri) . '\/?$#';
 
         $this->uri = $uri;
     }

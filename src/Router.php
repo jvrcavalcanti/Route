@@ -3,6 +3,8 @@
 namespace Accolon\Route;
 
 use Accolon\Container\Container;
+use Accolon\Route\Exceptions\HttpException;
+use Accolon\Route\Responses\Response;
 use Accolon\Route\Routes\RouteCollection;
 use Accolon\Route\Routes\RouteCollectionInterface;
 
@@ -63,7 +65,10 @@ class Router implements RouteCollectionInterface
     public function dispatch()
     {
         $request = $this->container->make(Request::class);
-        $response = $this->dispatcher->dispatch($request);
-        dd($response);
+        $route = $this->dispatcher->dispatch($request);
+
+        preg_match_all($route->uri, $request->uri(), $keys, PREG_SET_ORDER);
+        var_dump($route->uri);
+        dd($keys);
     }
 }

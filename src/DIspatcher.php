@@ -12,12 +12,12 @@ class Dispatcher
         //
     }
 
-    public function dispatch(Request $request): Response
+    public function dispatch(Request $request): Route
     {
         $uri = $request->uri();
         $method = $request->method();
 
         $route = $this->collection->findRoute($method, $uri);
-        return $route->run($request);
+        return $route;
     }
 }
