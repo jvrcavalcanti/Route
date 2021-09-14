@@ -16,15 +16,24 @@ class Request
     private array $files = [];
     public Headers $headers;
 
-    public function __construct($requests = null)
+    public function __construct(array $params = [])
     {
-        foreach ($requests ?? $_REQUEST as $key => $value) {
-            $this->data[$key] = htmlentities($value);
-        }
+        $this->updateRequest($params);
+    }
 
+    public function updateRequest(array $params = [])
+    {
+        $this->initParams($params);
         $this->initBody();
         $this->initHeaders();
         $this->files = $this->convertFilesArrayToObject($this->parseFiles($_FILES));
+    }
+
+    protected function initParams(array $params)
+    {
+        foreach (array_merge($params, $_REQUEST) as $key => $value) {
+            $this->data[$key] = htmlentities($value);
+        }
     }
     
     protected function initBody()

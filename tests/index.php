@@ -34,14 +34,11 @@ function dd($var)
 load_files('./Controllers');
 load_files('./Models');
 
-$app = new Router();
+$router = new Router();
+$router->get('/', fn() => '/');
+$router->get('/user/{id:number}/{sla}/', fn() => '/user/{id:number}');
+// $router->group(prefix: 'api', callback: function (RouteCollection $router) {
+//     $router->post('/', fn() => '/api/');
+// });
 
-$app->get('/', fn() => response()->text('oi', 200, ['Foo' => 'bar']));
-
-$app->middleware(Cors::class);
-
-$app->attributeRoutes('./Controllers', 'Tests\\Controllers');
-
-// dd($app->getRoutes());
-
-$app->dispatch();
+$router->dispatch();

@@ -55,7 +55,11 @@ class Route
             $uri = preg_replace("#{$key[0]}#", $replacement, $uri);
         }
 
-        $uri = '#^' . str_replace("/", "\/", $uri) . '\/?$#';
+        if (!str_ends_with($uri, '/')) {
+            $uri .= '/';
+        }
+
+        $uri = '#^' . str_replace("/", "\/", $uri) . '$#';
 
         $this->uri = $uri;
     }
@@ -64,9 +68,9 @@ class Route
     {
         preg_match_all('#\{(([a-zA-Z_]*)(\:([\w\d]*))?)\}#x', $uri, $keys, PREG_SET_ORDER);
 
-        $this->keys = array_map(function ($key) {
-            $new = [];
+        $new = [];
 
+        foreach ($keys as $key) {
             if (count($key) === 3) {
                 $name = $key[1];
                 $pattern = '([^/]+)';
@@ -78,8 +82,9 @@ class Route
             }
 
             $new[$name] = $pattern;
-            return $new;
-        }, $keys);
+        }
+
+        $this->keys = $new;
     }
 
     public static function create(string $method, string $uri, $action, ContainerInterface $container)
@@ -95,6 +100,11 @@ class Route
     public function getKey(int $i)
     {
         return $this->keys[$i] ?? null;
+    }
+
+    public function getKeysNames()
+    {
+        return array_keys($this->keys);
     }
 
     public function __invoke(Request $request)

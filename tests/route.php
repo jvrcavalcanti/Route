@@ -16,11 +16,11 @@ function dd($var)
 }
 
 $router = new Router();
-// $router->get('/', fn() => '/');
-$router->get('/user/{id:number}', fn() => '/user/{id:number}');
+$router->get('/', fn() => '/');
+$router->get('/user/{id:number}/{sla}/', fn() => '/user/{id:number}');
 $router->group(prefix: 'api', callback: function (RouteCollection $router) {
     $router->post('/', fn() => '/api/');
 });
-$_SERVER['REQUEST_URI'] = '/user/1';
-$_SERVER['REQUEST_METHOD'] = 'GET';
-$router->dispatch();
+$_SERVER['REQUEST_URI'] = '/api';
+$_SERVER['REQUEST_METHOD'] = 'POST';
+echo $router->dispatch() . PHP_EOL;
