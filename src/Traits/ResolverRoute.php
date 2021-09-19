@@ -20,7 +20,7 @@ trait ResolverRoute
 
             $newParams = $this->parseParams($params);
 
-            return ($this->container->make($class))->$method(...$newParams);
+            return ($class)->$method(...$newParams);
         }
 
         if (is_callable($route)) {

@@ -2,6 +2,7 @@
 
 use Accolon\Route\Router;
 use Accolon\Route\Middlewares\Cors;
+use Accolon\Route\Routes\RouteCollection;
 
 require_once "../vendor/autoload.php";
 
@@ -35,10 +36,10 @@ load_files('./Controllers');
 load_files('./Models');
 
 $router = new Router();
-$router->get('/', fn() => '/');
-$router->get('/user/{id:number}/{sla}/', fn() => '/user/{id:number}');
-// $router->group(prefix: 'api', callback: function (RouteCollection $router) {
-//     $router->post('/', fn() => '/api/');
-// });
-
-$router->dispatch();
+$router->get('/', fn() => response()->html('<h1>Hi</h1>'));
+$router->get('/user/{id:number}/{sla}/', fn() => '/user/' . request('id'));
+$router->group(prefix: 'api', callback: function (RouteCollection $router) {
+    $router->post('/', fn() => '/api/');
+});
+$router->attributeRoutes('./Controllers', 'Tests\\Controllers');
+echo $router->dispatch() . PHP_EOL;

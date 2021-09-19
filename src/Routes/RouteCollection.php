@@ -66,7 +66,7 @@ class RouteCollection implements RouteCollectionInterface
         throw new NotFoundException('Not found');
     }
 
-    private function addRoute(string $method, string $uri, \Closure|string|callable $action): Route
+    private function addRoute(string $method, string $uri, \Closure|string|array $action): Route
     {
         if ($uri === '/' && $this->prefix === '') {
             $this->routes[$method]['\/'] = Route::create(
@@ -107,37 +107,37 @@ class RouteCollection implements RouteCollectionInterface
         }
     }
 
-    public function get(string $uri, \Closure|string|callable $action): Route
+    public function get(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::GET, $uri, $action);
     }
 
-    public function post(string $uri, \Closure|string|callable $action): Route
+    public function post(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::POST, $uri, $action);
     }
 
-    public function put(string $uri, \Closure|string|callable $action): Route
+    public function put(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::PUT, $uri, $action);
     }
 
-    public function patch(string $uri, \Closure|string|callable $action): Route
+    public function patch(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::PATCH, $uri, $action);
     }
 
-    public function delete(string $uri, \Closure|string|callable $action): Route
+    public function delete(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::DELETE, $uri, $action);
     }
 
-    public function options(string $uri, \Closure|string|callable $action): Route
+    public function options(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::OPTIONS, $uri, $action);
     }
 
-    public function head(string $uri, \Closure|string|callable $action): Route
+    public function head(string $uri, \Closure|string|array $action): Route
     {
         return $this->addRoute(Method::HEAD, $uri, $action);
     }

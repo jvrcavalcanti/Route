@@ -17,11 +17,10 @@ class UserController extends Controller
         $this->user = $user;
     }
 
-    #[Route('/user/{id}', Method::POST)]
+    #[Route('/user/{id:number}', Method::POST)]
     public function show(Request $request)
     {
         $this->validate([
-            'id' => 'int',
             'price' => 'float'
         ]);
         

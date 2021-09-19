@@ -3,7 +3,11 @@
 namespace Accolon\Route;
 
 use Accolon\Container\Container;
+use Accolon\Route\Attributes\Route as RouteAttribute;
+use Accolon\Route\Exceptions\BadRequestException;
 use Accolon\Route\Exceptions\HttpException;
+use Accolon\Route\Exceptions\InternalServerErrorException;
+use Accolon\Route\Exceptions\NotFoundException;
 use Accolon\Route\Responses\Response;
 use Accolon\Route\Routes\RouteCollection;
 use Accolon\Route\Routes\RouteCollectionInterface;
@@ -25,37 +29,37 @@ class Router implements RouteCollectionInterface
         $this->container = $container ?? container();
     }
 
-    public function get(string $uri, \Closure|string|callable $action): Route
+    public function get(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->get($uri, $action);
     }
 
-    public function post(string $uri, \Closure|string|callable $action): Route
+    public function post(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->post($uri, $action);
     }
 
-    public function put(string $uri, \Closure|string|callable $action): Route
+    public function put(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->put($uri, $action);
     }
 
-    public function patch(string $uri, \Closure|string|callable $action): Route
+    public function patch(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->patch($uri, $action);
     }
 
-    public function delete(string $uri, \Closure|string|callable $action): Route
+    public function delete(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->delete($uri, $action);
     }
 
-    public function options(string $uri, \Closure|string|callable $action): Route
+    public function options(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->options($uri, $action);
     }
 
-    public function head(string $uri, \Closure|string|callable $action): Route
+    public function head(string $uri, \Closure|string|array $action): Route
     {
         return $this->collection->head($uri, $action);
     }
@@ -82,25 +86,16 @@ class Router implements RouteCollectionInterface
     {
         $request = $this->container->make(Request::class);
 
-        $response = $this->runMiddlewares($request);
-        return $response->body();
-
         try {
             $response = $this->runMiddlewares($request);
+        } catch (NotFoundException $e) {
+            $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
         } catch (BadRequestException $e) {
             $response = response()->{$e->getContentType()}($e->getMessage() ?? 'Bad Request', $e->getCode());
         } catch (InternalServerErrorException $e) {
             $response = ($this->fallback)($e->getMessage() ?? 'Internal Server Error');
-        } catch (HttpException $e) {
-            $response = response()->{$e->getContentType()}($e->getMessage(), $e->getCode());
         } finally {
-            if ($response instanceof Response) {
-                echo $response->body();
-            }
-    
-            if (!is_array($response) && !is_object($response)) {
-                echo $response;
-            }
+            return $response->body();
         }
     }
 
@@ -115,6 +110,11 @@ class Router implements RouteCollectionInterface
     public function attributeRoutes(string $path, string $namespace = 'App\\Controllers')
     {
         $files = scandir($path);
+
+        if ($files === false) {
+            throw new InternalServerErrorException("Directory to attributeRoutes error: {$path}");
+        }
+
         $files = array_splice($files, 2);
         $files = array_filter($files, fn($file) => str_ends_with($file, '.php'));
 
@@ -137,14 +137,14 @@ class Router implements RouteCollectionInterface
             $functions = array_filter($functions, fn($function) => $function->getName() !== '__construct');
             
             foreach ($functions as $function) {
-                $attributes = $function->getAttributes(Route::class);
+                $attributes = $function->getAttributes(RouteAttribute::class);
                 if (empty($attributes)) {
                     continue;
                 }
 
                 $attribute = ($attributes[0])->newInstance();
 
-                $method = $attribute->method;
+                $method = strtolower($attribute->method);
                 $uri = $attribute->uri;
 
                 $route = $this->{$method}($uri, [$class, $function->getName()]);
